@@ -67,7 +67,7 @@ let s:help_legend = [
       \]
 
 function! rebuff#open()
-  let b:originBuffer = bufnr("%")
+  let originBuffer = bufnr("%")
   silent let rawBufs = rebuff#getBufferList()
 
   let size = s:Get('window_size')
@@ -81,6 +81,7 @@ function! rebuff#open()
     exec "keepjumps hide" size . command "[Rebuff]"
   endif
 
+  let b:originBuffer = originBuffer
   let b:logo = rebuff#buildLogo(size)
   let b:help_text = rebuff#buildHelp(size)
 

@@ -116,7 +116,7 @@ function! rebuff#mappings#moveTo(dir, count)
       call timer_stop(b:preview_timeout)
     endif
 
-    let b:preview_timeout = timer_start(s:Get('debounce_preview'), function(rebuff#mappings#callPreview'))
+    let b:preview_timeout = timer_start(s:Get('debounce_preview'), function('rebuff#mappings#callPreview'))
   else
     call rebuff#preview()
   endif
