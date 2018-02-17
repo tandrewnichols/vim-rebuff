@@ -71,11 +71,16 @@ function! rebuff#mappings#filterBy(prop)
     elseif char == "\<CR>"
       let b:filter_text = ""
     else
-      let b:filter_text .= escape(char, '/.~')
-      echo b:filter_text
+      if char == "\<BS>"
+        let b:filter_text = b:filter_text[0:-2]
+      else
+        let b:filter_text .= escape(char, '/.~')
+      endif
+
       let b:current_filter = 'v:val.' . a:prop . ' =~ ''' . b:filter_text . ''''
       call rebuff#render()
       redraw!
+      echo b:filter_text
       call rebuff#mappings#filterBy(a:prop)
     endif
   else
