@@ -1,4 +1,10 @@
-if exists("g:rebuff_loaded") || &cp | finish | endif
+if exists("g:rebuff.loaded") || &cp | finish | endif
+
+if !exists('g:rebuff')
+  let g:rebuff = {}
+endif
+
+let g:rebuff = extend(g:rebuff, { 'loaded': 1 })
 
 function! Rebuff()
   call rebuff#open()

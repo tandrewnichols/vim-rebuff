@@ -1,26 +1,25 @@
-let s:Set = futile#set('rebuff')
-let s:Get = futile#get('rebuff')
-let s:Has = futile#has('rebuff')
-
-call s:Set('show_unlisted', 0)
-call s:Set('show_directories', 0)
-call s:Set('show_hidden', 1)
-call s:Set('show_help', 0)
-call s:Set('show_top_content', 1)
-call s:Set('default_sort_order', 'num')
-call s:Set('vertical_split', 1)
-call s:Set('window_size', 80)
-call s:Set('relative_to_project', 1)
-call s:Set('show_help_entries', 0)
-call s:Set('show_nonexistent', 0)
-call s:Set('open_with_count', 1)
-call s:Set('copy_absolute_path', 1)
-call s:Set('incremental_filter', 1)
-call s:Set('preserve_toggles', 0)
-call s:Set('window_position', 'rightbelow')
-call s:Set('preview', 1)
-call s:Set('reset_timeout', 1)
-call s:Set('debounce_preview', 150)
+let g:rebuff = extend(g:rebuff, {
+      \  'show_unlisted': 0,
+      \  'show_directories': 0,
+      \  'show_hidden': 1,
+      \  'show_help': 0,
+      \  'show_top_content': 1,
+      \  'default_sort_order': 'num',
+      \  'vertical_split': 1,
+      \  'window_size': 80,
+      \  'relative_to_project': 1,
+      \  'show_help_entries': 0,
+      \  'show_nonexistent': 0,
+      \  'open_with_count': 1,
+      \  'copy_absolute_path': 1,
+      \  'incremental_filter': 1,
+      \  'preserve_toggles': 0,
+      \  'window_position': 'rightbelow',
+      \  'preview': 1,
+      \  'reset_timeout': 1,
+      \  'debounce_preview': 150
+      \}
+      \, 'keep')
 
 sign define rebuff_pin text=📌
 sign define rebuff_eye text=👁️
@@ -70,13 +69,13 @@ function! rebuff#open()
   let originBuffer = bufnr("%")
   silent let rawBufs = rebuff#getBufferList()
 
-  let size = s:Get('window_size')
-  let command = s:Get('vertical_split') ? 'vnew' : 'new'
+  let size = g:rebuff.window_size
+  let command = !empty(g:rebuff.vertical_split) ? 'vnew' : 'new'
 
   call rebuff#createAugroup()
 
-  if !s:Has('window_position') && s:Get('window_position')
-    exec s:Get('window_poisition') "keepjumps hide" size . command "[Rebuff]"
+  if !empty(g:rebuff.window_position)
+    exec g:rebuff.window_position "keepjumps hide" size . command "[Rebuff]"
   else
     exec "keepjumps hide" size . command "[Rebuff]"
   endif
@@ -90,7 +89,7 @@ function! rebuff#open()
 
   call rebuff#setBufferFlags()
 
-  let b:current_sort = s:Get('default_sort_order')
+  let b:current_sort = g:rebuff.default_sort_order
 
   call rebuff#render()
 
@@ -128,7 +127,7 @@ function! rebuff#parseBufferList(bufs)
 endfunction
 
 function! rebuff#getRoot(name)
-  if !s:Get('relative_to_project')
+  if !empty(g:rebuff.relative_to_project)
     return ''
   endif
 
@@ -216,10 +215,10 @@ function! rebuff#checkFlags(entry)
   let flags = entry.flags
 
   for key in keys(s:flags)
-    let entry[ key ] = futile#matches(flags, s:flags[key])
+    let entry[ key ] = g:_.includes(flags, s:flags[key])
   endfor
 
-  let found = futile#find(s:pinned, { 'num': entry.num })
+  let found = g:_.find(s:pinned, { 'num': entry.num })
   let entry.pinned = type(found) != 0
 
   let entry.flags = flags
@@ -240,12 +239,12 @@ function! rebuff#setBufferFlags()
   let b:current_sort = 'num'
   let b:current_filter = ''
   let b:toggles = exists('s:toggles') ? s:toggles : {
-        \  'help': s:Get('show_help'),
-        \  'help_entries': s:Get('show_help_entries'),
-        \  'top_content': s:Get('show_top_content'),
-        \  'unlisted': s:Get('show_unlisted'),
-        \  'directories': s:Get('show_directories'),
-        \  'hidden': s:Get('show_hidden'),
+        \  'help': g:rebuff.show_help,
+        \  'help_entries': g:rebuff.show_help_entries,
+        \  'top_content': g:rebuff.show_top_content,
+        \  'unlisted': g:rebuff.show_unlisted,
+        \  'directories': g:rebuff.show_directories,
+        \  'hidden': g:rebuff.show_hidden,
         \  'in_project': 0,
         \  'modified_only': 0,
         \  'reverse': 0
@@ -266,7 +265,9 @@ function! rebuff#configureBuffer()
   setlocal nowrap
 endfunction
 
-let s:Plug = futile#plug('Rebuff')
+function! s:Plug(name, cmd)
+  exec "nnoremap <Plug>Rebuff" . a:name  a:cmd . "\<CR>"
+endfunction
 
 call s:Plug('ToggleHelpText', ":call rebuff#mappings#toggle('help')")
 call s:Plug('HandleEnter', ":\<C-u>call rebuff#mappings#handleEnter(v:count)")
@@ -303,47 +304,52 @@ call s:Plug('VerticalSplit', ":call rebuff#mappings#openCurrentBufferIn('vert sb
 call s:Plug('WipeoutBuffer', ":call rebuff#mappings#bufferAction('bw')")
 call s:Plug('ToggleTop', ":call rebuff#mappings#toggle('top_content')")
 
-let s:CreateMap = futile#createMap('Rebuff', 'n', '<buffer> <silent> <nowait>')
+function! s:Mapping(key, plug)
+  let plug = "<Plug>Rebuff" . a:plug
+  if !hasmapto(plug)
+    exec "nmap <buffer> <silent> <nowait>" a:key plug
+  endif
+endfunction
 
 function! rebuff#setMappings()
-  call s:CreateMap('?', 'ToggleHelpText')
-  call s:CreateMap("\<CR>", 'HandleEnter')
-  call s:CreateMap("\<Esc>", 'EscapeRebuff')
-  call s:CreateMap('-', 'DeleteBuffer')
-  call s:CreateMap('+', 'ToggleModified')
-  call s:CreateMap('.', 'FilterByExtension')
-  call s:CreateMap('/', 'FilterByText')
-  call s:CreateMap('~', 'ToggleInProject')
-  call s:CreateMap('%', 'CopyPath')
-  call s:CreateMap('}', 'JumpToBottom')
-  call s:CreateMap('{', 'JumpToTop')
-  call s:CreateMap('d', 'ToggleDirectories')
-  call s:CreateMap('e', 'SortByExtension')
-  call s:CreateMap('f', 'SortByFilename')
-  call s:CreateMap('h', 'ToggleHidden')
-  call s:CreateMap('H', 'ToggleHelpEntries')
-  call s:CreateMap('i', 'Include')
-  call s:CreateMap('j', 'MoveDown')
-  call s:CreateMap('k', 'MoveUp')
-  call s:CreateMap('n', 'SortByBufferNumber')
-  call s:CreateMap('p', 'Pin')
-  call s:CreateMap('q', 'RestoreOriginal')
-  call s:CreateMap('r', 'Reset')
-  call s:CreateMap('R', 'Reverse')
-  call s:CreateMap('s', 'HorizontalSplit')
-  call s:CreateMap('S', 'ToggleSort')
-  call s:CreateMap('t', 'OpenInTab')
-  call s:CreateMap('T', 'OpenInBackgroundTab')
-  call s:CreateMap('u', 'ToggleUnlisted')
-  call s:CreateMap('v', 'VerticalSplit')
-  call s:CreateMap('w', 'WipeoutBuffer')
-  call s:CreateMap('x', 'ToggleTop')
-  call s:CreateMap("\<Down>", 'MoveDownAlt')
-  call s:CreateMap("\<Up>", 'MoveUpAlt')
+  call s:Mapping('?', 'ToggleHelpText')
+  call s:Mapping("\<CR>", 'HandleEnter')
+  call s:Mapping("\<Esc>", 'EscapeRebuff')
+  call s:Mapping('-', 'DeleteBuffer')
+  call s:Mapping('+', 'ToggleModified')
+  call s:Mapping('.', 'FilterByExtension')
+  call s:Mapping('/', 'FilterByText')
+  call s:Mapping('~', 'ToggleInProject')
+  call s:Mapping('%', 'CopyPath')
+  call s:Mapping('}', 'JumpToBottom')
+  call s:Mapping('{', 'JumpToTop')
+  call s:Mapping('d', 'ToggleDirectories')
+  call s:Mapping('e', 'SortByExtension')
+  call s:Mapping('f', 'SortByFilename')
+  call s:Mapping('h', 'ToggleHidden')
+  call s:Mapping('H', 'ToggleHelpEntries')
+  call s:Mapping('i', 'Include')
+  call s:Mapping('j', 'MoveDown')
+  call s:Mapping('k', 'MoveUp')
+  call s:Mapping('n', 'SortByBufferNumber')
+  call s:Mapping('p', 'Pin')
+  call s:Mapping('q', 'RestoreOriginal')
+  call s:Mapping('r', 'Reset')
+  call s:Mapping('R', 'Reverse')
+  call s:Mapping('s', 'HorizontalSplit')
+  call s:Mapping('S', 'ToggleSort')
+  call s:Mapping('t', 'OpenInTab')
+  call s:Mapping('T', 'OpenInBackgroundTab')
+  call s:Mapping('u', 'ToggleUnlisted')
+  call s:Mapping('v', 'VerticalSplit')
+  call s:Mapping('w', 'WipeoutBuffer')
+  call s:Mapping('x', 'ToggleTop')
+  call s:Mapping("\<Down>", 'MoveDownAlt')
+  call s:Mapping("\<Up>", 'MoveUpAlt')
 endfunction
 
 function! rebuff#onExit()
-  if s:Get('preserve_toggles')
+  if !empty(g:rebuff.preserve_toggles)
     let s:toggles = copy(b:toggles)
   endif
 
@@ -351,20 +357,20 @@ function! rebuff#onExit()
 endfunction
 
 function! rebuff#resetTimeout()
-  if s:Get('reset_timeout')
+  if !empty(g:rebuff.reset_timeout)
     let &timeoutlen = s:prev_timeout
   endif
 endfunction
 
 function! rebuff#setTimeout()
-  if s:Get('reset_timeout')
+  if !empty(g:rebuff.reset_timeout)
     let s:prev_timeout = &timeoutlen
     let &timeoutlen = 0
  endif
 endfunction
 
 function! rebuff#preview()
-  if s:Get('preview')
+  if !empty(g:rebuff.preview)
     let buf = rebuff#getBufferFromLine()
     if !empty(buf)
       call rebuff#openInOtherSplit(buf.num)
@@ -476,8 +482,8 @@ endfunction
 function! rebuff#getPins()
   let pinned = filter(copy(b:buffer_objects), 'v:val.pinned')
   if len(pinned)
-    let pinned = futile#sortBy(pinned, 'pinned')
-    let pinnedLines = futile#map(pinned, function('s:ConstructEntry'))
+    let pinned = g:_.sortBy(pinned, 'pinned')
+    let pinnedLines = g:_.map(pinned, function('s:ConstructEntry'))
     return pinnedLines
   endif
 endfunction
@@ -485,9 +491,9 @@ endfunction
 function! rebuff#renderLines(pins)
   let list = rebuff#filter()
   if len(list)
-    let list = futile#sortBy(list, b:current_sort)
+    let list = g:_.sortBy(list, b:current_sort)
   endif
-  let lines = futile#map(list, function('s:ConstructEntry'))
+  let lines = g:_.map(list, function('s:ConstructEntry'))
 
   if b:toggles.reverse
     call reverse(lines)
@@ -540,9 +546,9 @@ function! s:ConstructEntry(i, entry)
   let entry = a:entry
   let line = '  '
   let line .= entry.modified ? '+ ' : '  '
-  let line .= futile#pad(entry.num, 3)
+  let line .= g:_.padStart(entry.num, 3)
   let line .= ' '
-  let line .= futile#pad(entry.flags, 5)
+  let line .= g:_.padStart(entry.flags, 5)
   let line .= ' '
   let line .= entry.name
   return line
@@ -627,7 +633,7 @@ function! rebuff#buildHelp(size)
   let lines = [ '', '', header ]
 
   for entry in s:help_legend
-    let help_key = ' ' . futile#pad(entry[0], 15, 1)
+    let help_key = ' ' . g:_.padEnd(entry[0], 15)
     let desc = entry[1]
 
     let remainder = a:size - len(help_key)

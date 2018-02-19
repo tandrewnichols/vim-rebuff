@@ -1,5 +1,3 @@
-let s:Get = futile#get('rebuff')
-
 function! rebuff#mappings#toggle(option)
   let b:toggles[ a:option ] = !b:toggles[ a:option ]
   call rebuff#render()
@@ -7,7 +5,7 @@ endfunction
 
 function! rebuff#mappings#handleEnter(count)
   if !empty(a:count)
-    if s:Get('open_with_count')
+    if g:rebuff.open_with_count
       bw
       exec "b" a:count
       normal! ze
@@ -51,7 +49,7 @@ function! rebuff#mappings#emoveBuffer(buf)
 endfunction
 
 function! rebuff#mappings#filterBy(prop)
-  if s:Get('incremental_filter')
+  if g:rebuff.incremental_filter
     if !exists("b:filter_text")
       let b:filter_text = ""
     endif
@@ -93,7 +91,7 @@ endfunction
 function! rebuff#mappings#copyPath()
   let currentBuffer = rebuff#getBufferFromLine()
   let text = currentBuffer.name
-  if s:Get('copy_absolute_path')
+  if g:rebuff.copy_absolute_path
     let text = fnamemodify(currentBuffer.rawname, ":p")
   endif
 
@@ -116,12 +114,12 @@ function! rebuff#mappings#moveTo(dir, count)
   exec "normal!" suffix
 
   " Debounce previewing for faster scrolling
-  if s:Get('debounce_preview')
+  if g:rebuff.debounce_preview
     if exists("b:preview_timeout")
       call timer_stop(b:preview_timeout)
     endif
 
-    let b:preview_timeout = timer_start(s:Get('debounce_preview'), function('rebuff#mappings#callPreview'))
+    let b:preview_timeout = timer_start(g:rebuff.debounce_preview, function('rebuff#mappings#callPreview'))
   else
     call rebuff#preview()
   endif
@@ -152,13 +150,13 @@ endfunction
 
 function! rebuff#mappings#rebuildLogo(num, pinned)
   if !len(a:pinned)
-    let b:logo = rebuff#buildLogo(s:Get('window_size') + a:num)
+    let b:logo = rebuff#buildLogo(g:rebuff.window_size + a:num)
   endif
 endfunction
 
 function! rebuff#mappings#rebuildHelp(num)
   if !len(a:pinned)
-    let b:help_text = rebuff#buildHelp(s:Get('window_size') + a:num)
+    let b:help_text = rebuff#buildHelp(g:rebuff.window_size + a:num)
   endif
 endfunction
 
