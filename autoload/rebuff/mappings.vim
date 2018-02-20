@@ -48,10 +48,18 @@ function! rebuff#mappings#emoveBuffer(buf)
   call remove(b:buffer_objects, i)
 endfunction
 
-function! rebuff#mappings#filterBy(prop)
+let s:search_indicators = { 'name': '/', 'extension': '/.' }
+
+function! rebuff#mappings#filterBy(prop, start)
+  let indicator = s:search_indicators[ a:prop ]
+
+  if a:start
+    echo indicator
+  endif
+
   if g:rebuff.incremental_filter
     if !exists("b:filter_text")
-      let b:filter_text = ""
+      let b:filter_text = ''
     endif
 
     try
@@ -65,6 +73,9 @@ function! rebuff#mappings#filterBy(prop)
     if char == "\<Esc>"
       let b:filter_text = ""
       let b:current_filter = ""
+      if !empty(b:matched_filter)
+        call matchdelete(b:matched_filter)
+      endif
       call rebuff#render()
     elseif char == "\<CR>"
       let b:filter_text = ""
@@ -77,12 +88,18 @@ function! rebuff#mappings#filterBy(prop)
 
       let b:current_filter = 'v:val.' . a:prop . ' =~ ''' . b:filter_text . ''''
       call rebuff#render()
+
+      if !empty(b:matched_filter)
+        call matchdelete(b:matched_filter)
+      endif
+      let b:matched_filter = matchadd('Search', b:filter_text)
+
       redraw!
-      echo b:filter_text
-      call rebuff#mappings#filterBy(a:prop)
+      echo indicator . b:filter_text
+      call rebuff#mappings#filterBy(a:prop, 0)
     endif
   else
-    let text = input('/')
+    let text = input(indicator)
     let b:current_filter = 'v:val.' . a:prop . ' =~ ''' . escape(text, '/.~') . ''''
     call rebuff#render()
   endif

@@ -163,7 +163,7 @@ function! rebuff#checkFilename(entry)
   let entry.incwd = name =~ getcwd()
   let entry.inproject = getcwd() =~ root && !entry.help
 
-  if entry.help || root == '.'
+  if entry.help || root == '.' || root == ''
     let name = entry.name
   elseif entry.incwd
     let name = fnamemodify(entry.name, ":.")
@@ -249,6 +249,10 @@ function! rebuff#setBufferFlags()
         \  'modified_only': 0,
         \  'reverse': 0
         \}
+  if exists('b:matched_filter') && !empty(b:matched_filter)
+    call matchdelete(b:matched_filter)
+  endif
+  let b:matched_filter = ''
 endfunction
 
 function! rebuff#configureBuffer()
@@ -273,8 +277,8 @@ call s:Plug('ToggleHelpText', ":call rebuff#mappings#toggle('help')")
 call s:Plug('HandleEnter', ":\<C-u>call rebuff#mappings#handleEnter(v:count)")
 call s:Plug('DeleteBuffer', ":call rebuff#mappings#bufferAction('bd')")
 call s:Plug('ToggleModified', ":call rebuff#mappings#toggle('modified_only')")
-call s:Plug('FilterByExtension', ":call rebuff#mappings#filterBy('extension')")
-call s:Plug('FilterByText', ":call rebuff#mappings#filterBy('name')")
+call s:Plug('FilterByExtension', ":call rebuff#mappings#filterBy('extension', 1)")
+call s:Plug('FilterByText', ":call rebuff#mappings#filterBy('name', 1)")
 call s:Plug('ToggleHelpEntries', ":call rebuff#mappings#toggle('help_entries')")
 call s:Plug('ToggleInProject', ":call rebuff#mappings#toggle('in_project')")
 call s:Plug('CopyPath', ":call rebuff#mappings#copyPath()")
