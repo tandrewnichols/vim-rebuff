@@ -43,7 +43,7 @@ function! rebuff#mappings#bufferAction(cmd)
   exec a:cmd buf.num
 endfunction
 
-function! rebuff#mappings#emoveBuffer(buf)
+function! rebuff#mappings#removeBuffer(buf)
   let i = index(b:buffer_objects, a:buf)
   call remove(b:buffer_objects, i)
 endfunction
