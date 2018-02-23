@@ -3,20 +3,31 @@ function! rebuff#mappings#toggle(option)
   call rebuff#render()
 endfunction
 
-function! rebuff#mappings#handleEnter(count)
+function! rebuff#mappings#wrapSelect(fn, count, ...)
+  let arg = a:0 == 1 ? a:1 : ''
+
   if !empty(a:count)
+    call rebuff#mappings#findByNumber(a:count)
     if g:rebuff.open_with_count
-      bw
-      exec "b" a:count
-      normal! ze
+      exec "call rebuff#mappings#" . a:fn
     else
-      call rebuff#mappings#findByNumber(a:count)
       call rebuff#preview()
     endif
   else
-    bw
-    normal! ze
+    exec "call rebuff#mappings#" . a:fn
   endif
+endfunction
+
+function! rebuff#mappings#open(count)
+  bw
+  if !empty(a:count)
+    exec "b" a:count
+  endif
+  normal! ze
+endfunction
+
+function! rebuff#mappings#openVsp(count)
+
 endfunction
 
 function! rebuff#mappings#findByNumber(count)
@@ -186,15 +197,15 @@ function! rebuff#mappings#reset()
   call rebuff#render(1)
 endfunction
 
-function! rebuff#mappings#openCurrentBufferInTab(...)
+function! rebuff#mappings#openCurrentBufferInTab(count, ...)
   let curtab = tabpagenr()
   call rebuff#mappings#restoreOriginalBuffer()
-  let target = rebuff#getBufferFromLine()
+  let target = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
 
   bw
   tabnew
   let current = bufnr('%')
-  exec "b" target.num
+  exec "b" target
   " Cleanup the unnamed buffer created by tabnew
   exec "bw" current
 
@@ -203,11 +214,11 @@ function! rebuff#mappings#openCurrentBufferInTab(...)
   endif
 endfunction
 
-function! rebuff#mappings#openCurrentBufferIn(cmd)
+function! rebuff#mappings#openCurrentBufferIn(cmd, count)
   call rebuff#mappings#restoreOriginalBuffer()
-  let buf = rebuff#getBufferFromLine()
+  let num = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
   q
-  exec a:cmd buf.num
+  exec a:cmd num
 endfunction
 
 let s:sort_methods = ['num', 'name', 'extension', 'root', 'mru']
