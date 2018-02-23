@@ -1,10 +1,12 @@
-if exists("g:rebuff.loaded") || &cp | finish | endif
+if exists("g:rebuff_loaded") || &cp | finish | endif
+
+let g:rebuff_loaded = 1
 
 if !exists('g:rebuff')
   let g:rebuff = {}
 endif
 
-let g:rebuff = extend(g:rebuff, { 'loaded': 1 })
+call rum#ignore('\[Rebuff\]')
 
 function! Rebuff()
   call rebuff#open()

@@ -4,7 +4,7 @@ let g:rebuff = extend(g:rebuff, {
       \  'show_hidden': 1,
       \  'show_help': 0,
       \  'show_top_content': 1,
-      \  'default_sort_order': 'num',
+      \  'default_sort_order': 'mru',
       \  'vertical_split': 1,
       \  'window_size': 80,
       \  'relative_to_project': 1,
@@ -50,6 +50,7 @@ let s:help_legend = [
       \ ['i',            'Include this file in results, even if it normally wouldn''t be'],
       \ ['j | <Down>',   'Preview next buffer.'],
       \ ['k | <Up>',     'Preview previous buffer.'],
+      \ ['m',            'Sort by MRU.'],
       \ ['n',            'Sort by buffer number.'],
       \ ['p',            'Pin entry to top.'],
       \ ['q | <Esc>',    'Close Rebuff and revert to original buffer.'],
@@ -66,6 +67,8 @@ let s:help_legend = [
       \]
 
 function! rebuff#open()
+  call rum#suspend()
+
   let originBuffer = bufnr("%")
   silent let rawBufs = rebuff#getBufferList()
 
@@ -232,11 +235,12 @@ function! rebuff#createAugroup()
     autocmd BufWinEnter \[Rebuff\] call rebuff#setMappings()
     autocmd BufWinLeave \[Rebuff\] call rebuff#onExit()
     autocmd BufLeave \[Rebuff\] call rebuff#resetTimeout()
+    autocmd BufWipeout \[Rebuff\] call rum#resume()
   augroup END
 endfunction
 
 function! rebuff#setBufferFlags()
-  let b:current_sort = 'num'
+  let b:current_sort = 'mru'
   let b:current_filter = ''
   let b:toggles = exists('s:toggles') ? s:toggles : {
         \  'help': g:rebuff.show_help,
@@ -291,6 +295,7 @@ call s:Plug('ToggleHidden', ":call rebuff#mappings#toggle('hidden')")
 " call s:Plug('Include', ":call \<sid>Include()")
 call s:Plug('MoveDown', ":\<C-u>call rebuff#mappings#moveTo('j', v:count)")
 call s:Plug('MoveUp', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
+call s:Plug('SortByMRU', "call rebuff#mappings#setSortTo('mru')")
 call s:Plug('MoveDownAlt', ":\<C-u>call rebuff#mappings#moveTo('j', v:count)")
 call s:Plug('MoveUpAlt', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
 call s:Plug('SortByBufferNumber', ":call rebuff#mappings#setSortTo('num')")
@@ -335,6 +340,7 @@ function! rebuff#setMappings()
   call s:Mapping('i', 'Include')
   call s:Mapping('j', 'MoveDown')
   call s:Mapping('k', 'MoveUp')
+  call s:Mapping('m', 'SortByMRU')
   call s:Mapping('n', 'SortByBufferNumber')
   call s:Mapping('p', 'Pin')
   call s:Mapping('q', 'RestoreOriginal')
@@ -495,7 +501,11 @@ endfunction
 function! rebuff#renderLines(pins)
   let list = rebuff#filter()
   if len(list)
-    let list = g:_.sortBy(list, b:current_sort)
+    if b:current_sort == 'mru'
+      let list = rebuff#sortByMRU(list)
+    else
+      let list = g:_.sortBy(list, b:current_sort)
+    endif
   endif
   let lines = g:_.map(list, function('s:ConstructEntry'))
 
@@ -659,4 +669,27 @@ function! rebuff#buildHelp(size)
   endfor
 
   return lines
+endfunction
+
+function! rebuff#sortByMRU(list)
+  let list = copy(a:list)
+  let mru = rum#get()
+
+  function! s:MRUIteree(memo, item, ...) closure
+    let memo = a:memo
+    let match = g:_.find(list, { 'num': a:item.num })
+    if type(match) == 4
+      call add(memo, match)
+    endif
+    return memo
+  endfunction
+
+  let newlist = g:_.reduce(mru, function('s:MRUIteree'), [])
+  for item in list
+    if index(newlist, item) == -1
+      call add(newlist, item)
+    endif
+  endfor
+
+  return newlist
 endfunction
