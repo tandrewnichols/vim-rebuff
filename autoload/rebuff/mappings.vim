@@ -19,15 +19,11 @@ function! rebuff#mappings#wrapSelect(fn, count, ...)
 endfunction
 
 function! rebuff#mappings#open(count)
-  bw
+  q
   if !empty(a:count)
     exec "b" a:count
   endif
   normal! ze
-endfunction
-
-function! rebuff#mappings#openVsp(count)
-
 endfunction
 
 function! rebuff#mappings#findByNumber(count)
@@ -51,7 +47,7 @@ function! rebuff#mappings#bufferAction(cmd)
   call rebuff#preview()
 
   " Delete the buffer
-  exec a:cmd buf.num
+  exec a:cmd . "!"  buf.num
 endfunction
 
 function! rebuff#mappings#removeBuffer(buf)
@@ -60,6 +56,8 @@ function! rebuff#mappings#removeBuffer(buf)
 endfunction
 
 let s:search_indicators = { 'name': '/', 'extension': '/.' }
+
+let s:mod_codes = [22, 8, 20, 2]
 
 function! rebuff#mappings#filterBy(prop, start)
   let indicator = s:search_indicators[ a:prop ]
@@ -88,11 +86,13 @@ function! rebuff#mappings#filterBy(prop, start)
         call matchdelete(b:matched_filter)
       endif
       call rebuff#render()
-    elseif char == "\<CR>"
-      let b:filter_text = ""
+    elseif char == "\<CR>" || index(s:mod_codes, code) > -1
+      call rebuff#mappings#tryOpen(char, code)
     else
       if char == "\<BS>"
-        let b:filter_text = b:filter_text[0:-2]
+        if len(b:filter_text)
+          let b:filter_text = b:filter_text[0:-2]
+        endif
       else
         let b:filter_text .= escape(char, '/.~')
       endif
@@ -113,6 +113,27 @@ function! rebuff#mappings#filterBy(prop, start)
     let text = input(indicator)
     let b:current_filter = 'v:val.' . a:prop . ' =~ ''' . escape(text, '/.~') . ''''
     call rebuff#render()
+  endif
+endfunction
+
+function! rebuff#mappings#tryOpen(char, code)
+  let char = a:char
+  let code = a:code
+  let numlines = b:buffer_range[1] - b:buffer_range[0]
+
+  let b:filter_text = ""
+  if g:rebuff.open_filter_single_file && numlines == 1
+    if char == "\<CR>"
+      call rebuff#mappings#open(0)
+    elseif code == 22
+      call rebuff#mappings#openCurrentBufferIn('vsplit', 0)
+    elseif code == 8
+      call rebuff#mappings#openCurrentBufferIn('split', 0)
+    elseif code == 20
+      call rebuff#mappings#openCurrentBufferInTab(0)
+    elseif code == 2
+      call rebuff#mappings#openCurrentBufferInTab(0, 1)
+    endif
   endif
 endfunction
 
@@ -165,27 +186,14 @@ function! rebuff#mappings#pin(pinned)
   if !empty(entry.pinned)
     let entry.pinned = 0
     call remove(a:pinned, index(a:pinned, entry))
-    call rebuff#mappings#rebuildLogo(0, a:pinned)
-    call rebuff#mappings#rebuildHelp(0, a:pinned)
   else
-    call rebuff#mappings#rebuildLogo(-2, a:pinned)
-    call rebuff#mappings#rebuildHelp(-2, a:pinned)
     let entry.pinned = localtime()
     call add(a:pinned, entry)
   endif
+
+  call rebuff#buildLogo()
+  call rebuff#buildHelp()
   call rebuff#render()
-endfunction
-
-function! rebuff#mappings#rebuildLogo(num, pinned)
-  if !len(a:pinned)
-    let b:logo = rebuff#buildLogo(g:rebuff.window_size + a:num)
-  endif
-endfunction
-
-function! rebuff#mappings#rebuildHelp(num)
-  if !len(a:pinned)
-    let b:help_text = rebuff#buildHelp(g:rebuff.window_size + a:num)
-  endif
 endfunction
 
 function! rebuff#mappings#restoreOriginalBuffer()
@@ -202,12 +210,8 @@ function! rebuff#mappings#openCurrentBufferInTab(count, ...)
   call rebuff#mappings#restoreOriginalBuffer()
   let target = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
 
-  bw
-  tabnew
-  let current = bufnr('%')
-  exec "b" target
-  " Cleanup the unnamed buffer created by tabnew
-  exec "bw" current
+  q
+  exec "tabe" bufname(str2nr(target))
 
   if a:0 == 1
     exec "normal!" curtab . "gt"
@@ -218,7 +222,7 @@ function! rebuff#mappings#openCurrentBufferIn(cmd, count)
   call rebuff#mappings#restoreOriginalBuffer()
   let num = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
   q
-  exec a:cmd num
+  exec a:cmd bufname(str2nr(num))
 endfunction
 
 let s:sort_methods = ['mru', 'num', 'name', 'extension', 'root']
@@ -232,4 +236,25 @@ function! rebuff#mappings#toggleSort()
   endif
 
   call rebuff#render()
+endfunction
+
+function! rebuff#mappings#include(included)
+  let buf = rebuff#getBufferFromLine()
+  let buf.include = 1
+  let index = index(a:included, buf.num)
+  if index > -1
+    call remove(a:included, index)
+  else
+    call add(a:included, buf.num)
+  endif
+
+  call rebuff#buildLogo()
+  call rebuff#buildHelp()
+  call rebuff#render()
+endfunction
+
+function! rebuff#mappings#jumpTo(char)
+  call search(a:char)
+  normal! 0
+  call rebuff#preview()
 endfunction

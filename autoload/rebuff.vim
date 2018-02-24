@@ -17,15 +17,17 @@ let g:rebuff = extend(g:rebuff, {
       \  'window_position': 'rightbelow',
       \  'preview': 1,
       \  'reset_timeout': 1,
-      \  'debounce_preview': 150
+      \  'debounce_preview': 150,
+      \  'open_filter_single_file': 1
       \}
       \, 'keep')
 
 
-hi RebuffSort cterm=bold ctermbg=none ctermfg=red
+hi RebuffAccent cterm=bold ctermbg=none ctermfg=red
 sign define rebuff_pin text=📌
 sign define rebuff_eye text=👁️
 let s:pinned = []
+let s:included = []
 let s:logo = [
       \  '   ___      __        ______',
       \  '  / _ \___ / /  __ __/ _/ _/',
@@ -41,7 +43,8 @@ let s:help_legend = [
       \ ['.',            'Filter by file extension.'],
       \ ['/',            'Filter by arbitrary text.'],
       \ ['~',            'Show only files in this project.'],
-      \ ['%',            'Copy path of buffer under cursor.'],
+      \ ['%',            'Open current buffer.'],
+      \ ['#',            'Open alternate buffer.'],
       \ ['}',            'Jump to bottom of list.'],
       \ ['{',            'Jump to top of list.'],
       \ ['d',            'Toggle whether directories are shown.'],
@@ -65,7 +68,8 @@ let s:help_legend = [
       \ ['u',            'Toggle whether unlisted buffers are shown.'],
       \ ['v',            'Open buffer under cursor in vertical split.'],
       \ ['w',            'Wipeout buffer under cursor.'],
-      \ ['x',            'Toggle top content.']
+      \ ['x',            'Toggle top content.'],
+      \ ['y',            'Copy path of buffer under cursor.']
       \]
 
 function! rebuff#open()
@@ -75,7 +79,12 @@ function! rebuff#open()
   silent let rawBufs = rebuff#getBufferList()
 
   let size = g:rebuff.window_size
-  let command = !empty(g:rebuff.vertical_split) ? 'vnew' : 'new'
+
+  if bufexists('[Rebuff]')
+    let command = !empty(g:rebuff.vertical_split) ? 'vsplit' : 'split'
+  else
+    let command = !empty(g:rebuff.vertical_split) ? 'vnew' : 'new'
+  endif
 
   call rebuff#createAugroup()
 
@@ -85,9 +94,16 @@ function! rebuff#open()
     exec "keepjumps hide" size . command "[Rebuff]"
   endif
 
+  if g:rebuff.vertical_split
+    wincmd L
+    exec size . "wincmd |"
+  else
+    wincmd J
+  endif
+
   let b:originBuffer = originBuffer
-  let b:logo = rebuff#buildLogo(size)
-  let b:help_text = rebuff#buildHelp(size)
+  call rebuff#buildLogo()
+  call rebuff#buildHelp()
 
   let b:buffer_objects = rebuff#parseBufferList(rawBufs)
   let b:orig_buffers = copy(b:buffer_objects)
@@ -226,6 +242,9 @@ function! rebuff#checkFlags(entry)
   let found = g:_.find(s:pinned, { 'num': entry.num })
   let entry.pinned = type(found) != 0
 
+  let included = index(s:included, entry.num)
+  let entry.include = included > -1
+
   let entry.flags = flags
   let entry.flag_length = len(flags)
 endfunction
@@ -256,7 +275,12 @@ function! rebuff#setBufferFlags()
         \  'reverse': 0
         \}
   if exists('b:matched_filter') && !empty(b:matched_filter)
-    call matchdelete(b:matched_filter)
+    try
+      call matchdelete(b:matched_filter)
+    catch
+      " If for some reason the match doesn't exist
+      " just ignore the error
+    endtry
   endif
   let b:matched_filter = ''
 endfunction
@@ -287,33 +311,35 @@ call s:Plug('FilterByExtension', ":call rebuff#mappings#filterBy('extension', 1)
 call s:Plug('FilterByText', ":call rebuff#mappings#filterBy('name', 1)")
 call s:Plug('ToggleHelpEntries', ":call rebuff#mappings#toggle('help_entries')")
 call s:Plug('ToggleInProject', ":call rebuff#mappings#toggle('in_project')")
-call s:Plug('CopyPath', ":call rebuff#mappings#copyPath()")
+call s:Plug('JumpToCurrent', ":call rebuff#mappings#jumpTo('%')")
+call s:Plug('JumpToAlternate', ":call rebuff#mappings#jumpTo('#')")
 call s:Plug('JumpToBottom', ":call rebuff#mappings#jumpTo(b:buffer_range[1])")
 call s:Plug('JumpToTop', ":call rebuff#mappings#jumpTo(b:buffer_range[0])")
 call s:Plug('ToggleDirectories', ":call rebuff#mappings#toggle('directories')")
 call s:Plug('SortByExtension', ":call rebuff#mappings#setSortTo('extension')")
 call s:Plug('SortByFilename', ":call rebuff#mappings#setSortTo('name')")
 call s:Plug('ToggleHidden', ":call rebuff#mappings#toggle('hidden')")
-" call s:Plug('Include', ":call \<sid>Include()")
+call s:Plug('Include', ":call rebuff#mappings#include(rebuff#included())")
 call s:Plug('MoveDown', ":\<C-u>call rebuff#mappings#moveTo('j', v:count)")
 call s:Plug('MoveUp', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
 call s:Plug('SortByMRU', "call rebuff#mappings#setSortTo('mru')")
 call s:Plug('MoveDownAlt', ":\<C-u>call rebuff#mappings#moveTo('j', v:count)")
 call s:Plug('MoveUpAlt', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
 call s:Plug('SortByBufferNumber', ":call rebuff#mappings#setSortTo('num')")
-call s:Plug('Pin', ":call rebuff#mappings#pin(s:pinned)")
-call s:Plug('RestoreOriginal', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:bw")
-call s:Plug('EscapeRebuff', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:bw")
+call s:Plug('Pin', ":call rebuff#mappings#pin(rebuff#pins())")
+call s:Plug('RestoreOriginal', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:q")
+call s:Plug('EscapeRebuff', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:q")
 call s:Plug('Reverse', ":call rebuff#mappings#toggle('reverse')")
 call s:Plug('Reset', ":call rebuff#mappings#reset()")
-call s:Plug('HorizontalSplit', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferIn(''sb'', v:count)', v:count)")
+call s:Plug('HorizontalSplit', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferIn(''split'', v:count)', v:count)")
 call s:Plug('ToggleSort', ":call rebuff#mappings#toggleSort()")
 call s:Plug('OpenInTab', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferInTab(v:count)', v:count)")
 call s:Plug('OpenInBackgroundTab', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferInTab(v:count, ''background'')', v:count)")
 call s:Plug('ToggleUnlisted', ":call rebuff#mappings#toggle('unlisted')")
-call s:Plug('VerticalSplit', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferIn(''vert sb'', v:count)', v:count)")
+call s:Plug('VerticalSplit', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferIn(''vsplit'', v:count)', v:count)")
 call s:Plug('WipeoutBuffer', ":call rebuff#mappings#bufferAction('bw')")
 call s:Plug('ToggleTop', ":call rebuff#mappings#toggle('top_content')")
+call s:Plug('CopyPath', ":call rebuff#mappings#copyPath()")
 
 function! s:Mapping(key, plug)
   let plug = "<Plug>Rebuff" . a:plug
@@ -331,7 +357,8 @@ function! rebuff#setMappings()
   call s:Mapping('.', 'FilterByExtension')
   call s:Mapping('/', 'FilterByText')
   call s:Mapping('~', 'ToggleInProject')
-  call s:Mapping('%', 'CopyPath')
+  call s:Mapping('%', 'JumpToCurrent')
+  call s:Mapping('#', 'JumpToAlternate')
   call s:Mapping('}', 'JumpToBottom')
   call s:Mapping('{', 'JumpToTop')
   call s:Mapping('d', 'ToggleDirectories')
@@ -356,8 +383,17 @@ function! rebuff#setMappings()
   call s:Mapping('v', 'VerticalSplit')
   call s:Mapping('w', 'WipeoutBuffer')
   call s:Mapping('x', 'ToggleTop')
+  call s:Mapping('y', 'CopyPath')
   call s:Mapping("\<Down>", 'MoveDownAlt')
   call s:Mapping("\<Up>", 'MoveUpAlt')
+endfunction
+
+function! rebuff#pins()
+  return s:pinned
+endfunction
+
+function! rebuff#included()
+  return s:included
 endfunction
 
 function! rebuff#onExit()
@@ -392,7 +428,7 @@ endfunction
 
 function! rebuff#getBufferFromLine()
   let line = getline('.')
-  if !empty(line) && line =~ '^[ +]\+\d\+ [u%#ah=RF?x+ -]\+ [\~a-zA-Z0-9\/\._-]\+$'
+  if !empty(line) && line =~ '^[ +]\+\d\+ [u%#ah=RF?x+ -]\+ .\+$'
     let num = rebuff#extractBufNum(line)
     return rebuff#findBuffer('num', num)
   endif
@@ -449,11 +485,7 @@ function! rebuff#filter()
     call add(predicate, b:current_filter)
   endif
 
-  if len(predicate)
-    return filter(list, join(predicate, ' && '))
-  else
-    return list
-  endif
+  return filter(list, 'v:val.include || (' . join(predicate, ' && ') . ')')
 endfunction
 
 function! rebuff#render(...)
@@ -470,8 +502,9 @@ function! rebuff#render(...)
     call setline(1, b:logo)
   endif
 
-  call append('$', [g:_.padStart('Current sort: ' . b:current_sort, g:rebuff.window_size - 1), '', ''])
-  let s:sort_match = matchadd('RebuffSort', 'Current sort: \zs[a-z]\+\ze')
+  call append('$', [rebuff#buildInfoLine(), '', ''])
+  let s:sort_match = matchadd('RebuffAccent', 'Sort: \zs[a-z]\+\ze')
+  let s:toggled_on_match = matchadd('RebuffAccent', ': \zs1\ze')
 
   let pins = rebuff#getPins()
   call rebuff#renderLines(pins)
@@ -530,6 +563,10 @@ function! rebuff#renderLines(pins)
   if !empty(a:pins)
     call rebuff#renderPins(a:pins)
   endif
+
+  if !empty(s:included)
+    call rebuff#renderIncludes()
+  endif
 endfunction
 
 function! rebuff#renderPins(pins)
@@ -540,15 +577,26 @@ function! rebuff#renderPins(pins)
   endfor
 endfunction
 
+function! rebuff#renderIncludes()
+  let pos = getpos('.')
+  for include in s:included
+    call search('^[ +]*' . include, 'sw')
+    let line = getpos('.')[1]
+    exec "sign place" line "line=" . line "name=rebuff_eye file=" . expand("%:p")
+  endfor
+
+  call setpos('.', pos)
+endfunction
+
 function! rebuff#setBufferRange(lines)
-  let start = b:toggles.top_content ? len(b:logo) : 0
+  let start = b:toggles.top_content ? len(b:logo) + 3 : 3
   let end = start + len(a:lines)
   let b:buffer_range = [start, end]
 endfunction
 
 function! rebuff#setCursorPosition(currentBuffer)
   " Try to position onto the same buffer as before
-  if empty(a:currentBuffer) || !search(a:currentBuffer.num . '')
+  if empty(a:currentBuffer) || !search('^[ +]*' . string(a:currentBuffer.num))
     " If that fails, position on the current buffer
     if !search('%')
       " And then if that fails (e.g. when filtering) just
@@ -580,9 +628,10 @@ function! rebuff#highlight()
     syn match rebuffLogo       "^|\zs.\+\ze|$" contained
     syn region rebuffSide      start="|" end="|" contains=rebuffLogo
 
+
     " Buffer listing definitions
     syn match rebuffModified   "+"
-    syn match rebuffBufNumber  "\s\d\+\s"
+    syn match rebuffBufNumber  "[^:]\s\d\+\s"
     syn match rebuffCurrent    "%.\+$"
     syn match rebuffNonCurrent "[# ][ah].\+$"
     syn match rebuffUnlisted   "u[# ][ah ].\+$"
@@ -625,25 +674,38 @@ function! rebuff#extractBufNum(entry)
   return matchstr(a:entry, '^[ +]*\zs\d\+\ze')
 endfunction
 
-function! rebuff#buildLogo(size)
-  let isEven = fmod(a:size, 2) == 0.0
-  let left = float2nr(floor((a:size - 30) / 2))
+function! rebuff#getSize()
+  let size = g:rebuff.window_size
+  if len(s:pinned) || len(s:included)
+    let size -= 2
+  endif
+
+  return size
+endfunction
+
+function! rebuff#buildLogo()
+  let size = rebuff#getSize()
+
+  let isEven = fmod(size, 2) == 0.0
+  let left = float2nr(floor((size - 30) / 2))
   let right = isEven ? left : left + 1
 
-  let lines = [ repeat('-', a:size) ]
+  let lines = [ repeat('-', size) ]
   for line in s:logo
     call add(lines, '|' . repeat(' ', left) . line . repeat(' ', right) . '|')
   endfor
 
-  call add(lines, '|' . repeat(' ', a:size - 2) . '|')
-  call add(lines, repeat('-', a:size))
+  call add(lines, '|' . repeat(' ', size - 2) . '|')
+  call add(lines, repeat('-', size))
 
-  return lines
+  let b:logo = lines
 endfunction
 
-function! rebuff#buildHelp(size)
-  let isEven = fmod(a:size, 2) == 0.0
-  let left = float2nr(floor((a:size - 6) / 2))
+function! rebuff#buildHelp()
+  let size = rebuff#getSize()
+
+  let isEven = fmod(size, 2) == 0.0
+  let left = float2nr(floor((size - 6) / 2))
   let right = isEven ? left : left + 1
 
   let header = repeat('=', left) . ' HELP ' . repeat('=', right)
@@ -653,7 +715,7 @@ function! rebuff#buildHelp(size)
     let help_key = ' ' . g:_.padEnd(entry[0], 15)
     let desc = entry[1]
 
-    let remainder = a:size - len(help_key)
+    let remainder = size - len(help_key)
 
     if len(desc) > remainder
       let idx = stridx(desc, ' ')
@@ -671,7 +733,21 @@ function! rebuff#buildHelp(size)
     endif
   endfor
 
-  return lines
+  let b:help_text = lines
+endfunction
+
+function! rebuff#buildInfoLine()
+  let size = rebuff#getSize() - 1
+  let line = [
+        \ 'Dirs: ' . b:toggles.directories,
+        \ 'Hidden: ' . b:toggles.hidden,
+        \ 'Unlisted: ' . b:toggles.unlisted,
+        \ 'Mod: ' . b:toggles.modified_only,
+        \ 'Help: ' . b:toggles.help_entries,
+        \ 'Proj: ' . b:toggles.in_project,
+        \ 'Sort: ' . b:current_sort
+        \]
+  return g:_.padStart(join(line, ' '), size)
 endfunction
 
 function! rebuff#sortByMRU(list)

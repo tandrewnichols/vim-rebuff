@@ -6,11 +6,13 @@ let g:rebuff_loaded = 1
 " Vim has no better way to deal with this at the moment
 if !exists("g:lodash_loaded")
   echo 'Rebuff requires vim-lodash. See https://github.com/tandrewnichols/vim-lodash.'
-  finish
 endif
 
 if !exists("g:rum_loaded")
   echo 'Rebuff requires vim-rumrunner. See https://github.com/tandrewnichols/vim-rumrunner.'
+endif
+
+if !exists("g:lodash_loaded") || !exists("g:rum_loaded")
   finish
 endif
 
