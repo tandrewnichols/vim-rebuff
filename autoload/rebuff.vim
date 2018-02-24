@@ -21,6 +21,8 @@ let g:rebuff = extend(g:rebuff, {
       \}
       \, 'keep')
 
+
+hi RebuffSort cterm=bold ctermbg=none ctermfg=red
 sign define rebuff_pin text=📌
 sign define rebuff_eye text=👁️
 let s:pinned = []
@@ -130,7 +132,7 @@ function! rebuff#parseBufferList(bufs)
 endfunction
 
 function! rebuff#getRoot(name)
-  if !empty(g:rebuff.relative_to_project)
+  if !g:rebuff.relative_to_project
     return ''
   endif
 
@@ -468,6 +470,9 @@ function! rebuff#render(...)
     call setline(1, b:logo)
   endif
 
+  call append('$', [g:_.padStart('Current sort: ' . b:current_sort, g:rebuff.window_size - 1), '', ''])
+  let s:sort_match = matchadd('RebuffSort', 'Current sort: \zs[a-z]\+\ze')
+
   let pins = rebuff#getPins()
   call rebuff#renderLines(pins)
 
@@ -632,8 +637,6 @@ function! rebuff#buildLogo(size)
 
   call add(lines, '|' . repeat(' ', a:size - 2) . '|')
   call add(lines, repeat('-', a:size))
-  call add(lines, '')
-  call add(lines, '')
 
   return lines
 endfunction
