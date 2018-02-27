@@ -9,7 +9,6 @@ let g:rebuff = extend(g:rebuff, {
       \  'window_size': 80,
       \  'relative_to_project': 1,
       \  'show_help_entries': 0,
-      \  'show_nonexistent': 0,
       \  'open_with_count': 1,
       \  'copy_absolute_path': 1,
       \  'incremental_filter': 1,
@@ -55,9 +54,10 @@ let s:help_legend = [
       \ ['i',            'Include this file in results, even if it normally wouldn''t be'],
       \ ['j | <Down>',   'Preview next buffer.'],
       \ ['k | <Up>',     'Preview previous buffer.'],
-      \ ['m',            'Sort by MRU.'],
+      \ ['M',            'Sort by MRU.'],
       \ ['n',            'Sort by buffer number.'],
       \ ['p',            'Pin entry to top.'],
+      \ ['P',            'Sort by project.'],
       \ ['q | <Esc>',    'Close Rebuff and revert to original buffer.'],
       \ ['r',            'Reset original buffer list.'],
       \ ['R',            'Reverse current buffer listing.'],
@@ -201,7 +201,7 @@ function! rebuff#checkFilename(entry)
   endif
 
   let entry.rawname = entry.name
-  let entry.root = entry.help ? '' : root
+  let entry.project = entry.help ? '' : root
   let entry.directory = isDir
   let entry.extension = fnamemodify(entry.name, ':e')
 
@@ -304,7 +304,7 @@ function! s:Plug(name, cmd)
 endfunction
 
 call s:Plug('ToggleHelpText', ":call rebuff#mappings#toggle('help')")
-call s:Plug('HandleEnter', ":\<C-u>call rebuff#mappings#wrapSelect('open(v:count)', v:count)")
+call s:Plug('Select', ":\<C-u>call rebuff#mappings#wrapSelect('open(v:count)', v:count)")
 call s:Plug('DeleteBuffer', ":call rebuff#mappings#bufferAction('bd')")
 call s:Plug('ToggleModified', ":call rebuff#mappings#toggle('modified_only')")
 call s:Plug('FilterByExtension', ":call rebuff#mappings#filterBy('extension', 1)")
@@ -327,8 +327,9 @@ call s:Plug('MoveDownAlt', ":\<C-u>call rebuff#mappings#moveTo('j', v:count)")
 call s:Plug('MoveUpAlt', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
 call s:Plug('SortByBufferNumber', ":call rebuff#mappings#setSortTo('num')")
 call s:Plug('Pin', ":call rebuff#mappings#pin(rebuff#pins())")
+call s:Plug('SortByProject', ":call rebuff#mappings#setSortTo('project')")
 call s:Plug('RestoreOriginal', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:q")
-call s:Plug('EscapeRebuff', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:q")
+call s:Plug('Escape', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:q")
 call s:Plug('Reverse', ":call rebuff#mappings#toggle('reverse')")
 call s:Plug('Reset', ":call rebuff#mappings#reset()")
 call s:Plug('HorizontalSplit', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferIn(''split'', v:count)', v:count)")
@@ -350,8 +351,8 @@ endfunction
 
 function! rebuff#setMappings()
   call s:Mapping('?', 'ToggleHelpText')
-  call s:Mapping("\<CR>", 'HandleEnter')
-  call s:Mapping("\<Esc>", 'EscapeRebuff')
+  call s:Mapping("\<CR>", 'Select')
+  call s:Mapping("\<Esc>", 'Escape')
   call s:Mapping('-', 'DeleteBuffer')
   call s:Mapping('+', 'ToggleModified')
   call s:Mapping('.', 'FilterByExtension')
@@ -369,9 +370,10 @@ function! rebuff#setMappings()
   call s:Mapping('i', 'Include')
   call s:Mapping('j', 'MoveDown')
   call s:Mapping('k', 'MoveUp')
-  call s:Mapping('m', 'SortByMRU')
+  call s:Mapping('M', 'SortByMRU')
   call s:Mapping('n', 'SortByBufferNumber')
   call s:Mapping('p', 'Pin')
+  call s:Mapping('P', 'SortByProject')
   call s:Mapping('q', 'RestoreOriginal')
   call s:Mapping('r', 'Reset')
   call s:Mapping('R', 'Reverse')

@@ -225,7 +225,7 @@ function! rebuff#mappings#openCurrentBufferIn(cmd, count)
   exec a:cmd bufname(str2nr(num))
 endfunction
 
-let s:sort_methods = ['mru', 'num', 'name', 'extension', 'root']
+let s:sort_methods = ['mru', 'num', 'name', 'extension', 'project']
 
 function! rebuff#mappings#toggleSort()
   let nxt = index(s:sort_methods, b:current_sort) + 1
