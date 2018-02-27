@@ -201,3 +201,11 @@ When moving up or down, the previewing functionality is actually debounced via t
 #### g:rebuff.open_filter_single_file
 
 When filtering with `.` or `/`, if only one file matches and this option is set to 1, hitting `<CR>` selects that file instead of returning you to the Rebuff pane. You can also use If this option is set to 1 and only one file matches, you can also use `<C-v>` to open in a vertical split, `<C-h>` to open in a horizontal split, `<C-t>` to open in a tab, or `<C-b>` to open in a background tab. Default: 1
+
+## Contributing
+
+I always try to be open to suggestions, but I do still have opinions about what this should and should not be so . . . it never hurts to ask before investing a lot of time on a patch.
+
+## License
+
+See [LICENSE](./LICENSE)
