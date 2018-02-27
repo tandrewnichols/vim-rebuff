@@ -22,7 +22,7 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
   Plugin 'tandrewnichols/vim-lodash'
   Plugin 'tandrewnichols/vim-rumrunner'
   Plugin 'dbakker/vim-projectroot'
-  Plugin 'tandrewnichols/vim-rebuf'
+  Plugin 'tandrewnichols/vim-rebuff'
   ```
 2. Install with `:BundleInstall`.
 
@@ -42,7 +42,7 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
   Plug 'tandrewnichols/vim-lodash'
   Plug 'tandrewnichols/vim-rumrunner'
   Plug 'dbakker/vim-projectroot'
-  Plug 'tandrewnichols/vim-rebuf'
+  Plug 'tandrewnichols/vim-rebuff'
   ```
 2. Install with `:PlugInstall`.
 
