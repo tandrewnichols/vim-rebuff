@@ -8,6 +8,10 @@ I used to use BufExplorer as my `:ls` wrapper but just looking at a list of buff
 
 One major difference between this and other buffer explorers is that you can't (currently) open it in the current buffer or a new tab, primarily because the goal of this was to _preview_ files, and there's nowhere to show a preview in those cases. So I made the intentional decision, at least for now, to enforce opening Rebuff in splits. By default, Rebuff will open in a right vertical split 80 columns in width when you run `:Rebuff` or `:Ls`. The mapping `<leader>ls` is also provided, although you an override that. Once Rebuff is open, navigate using `j` and `k` (or `<Down>` and `<Up>`) and each buffer will be previewed on the other side of the screen. There are a lot of [helpful mappings](#mappings) specific to the Rebuff buffer as well.
 
+## Requirements
+
+This plugin uses timers, which means it requires at least vim 8.0.
+
 ## Installation
 
 This plugin has three dependencies. I regret that slightly, since vim has no simple way to manage or install dependencies, but those dependencies are definitely stand-alone things that don't belong in this plugin, so you'll have to install them along with this plugin. Fortunately, this is pretty easy to do with a decent plugin manager. For what it's worth, I use `Plug` to manage my plugins, and I really like it, so if you don't have a plugin manager, I recommend that one.
