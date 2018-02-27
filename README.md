@@ -2,6 +2,8 @@
 
 A buffer explorer with file previewing.
 
+![demo.gif](./demo.gif)
+
 ## Overview
 
 I used to use BufExplorer as my `:ls` wrapper but just looking at a list of buffer names, especially when they're very similar to one another, doesn't always make it easy to know which file you want, and the whole point of buffers in vim is to be able to get quickly to the one you need. What I wanted was something that would preview the buffer under the cursor to give the file some context. So I wrote that basic functionality (shout out to @jlanzarotta . . . I used BufExplorer as a reference to get started), and then it quickly became my pet project. Turns out I had a lot of ideas for "improving" on the typical buffer explorer. But that really depends what you like, so while I've chosen defaults based on what suits me, I think you'll find that most everything is easily customizable via options.
