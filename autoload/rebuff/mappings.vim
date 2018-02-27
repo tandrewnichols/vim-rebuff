@@ -147,7 +147,7 @@ function! rebuff#mappings#copyPath()
   let @" = text
 endfunction
 
-function! rebuff#mappings#jumpTo(line)
+function! rebuff#mappings#jumpToLine(line)
   exec a:line
   normal! 0
   call rebuff#preview()
