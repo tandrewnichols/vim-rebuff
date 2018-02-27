@@ -1,0 +1,562 @@
+*rebuff.txt* Basically BufExplorer with live previewing.
+
+              ___      __        ______   ~
+             / _ \___ / /  __ __/ _/ _/   ~
+            / , _/ -_) _ \/ // / _/ _/    ~
+           /_/|_|\__/_.__/\_,_/_//_/      ~
+
+INTRODUCTION                       *rebuff*
+
+A buffer explorer that previews the buffer under the cursor.
+
+CONTENTS                           *rebuff-contents*
+
+  1.  Overview                  |rebuff-overview|
+  2.  Requirements              |rebuff-requirements|
+  3.  Dependencies              |rebuff-dependencies|
+  4.  Installation              |rebuff-installation|
+  5.  Commands                  |rebuff-commands|
+  6.  Functions                 |rebuff-functions|
+  7.  Mappings                  |rebuff-mappings|
+  8.  Plugs                     |rebuff-plugs|
+  8.  Options                   |rebuff-options|
+  9.  Issues                    |rebuff-issues|
+  10. Contributing              |rebuff-contributing|
+  11. License                   |rebuff-license|
+
+OVERVIEW                           *rebuff-overview*
+
+Inspired by BufExplorer, this plugin is a wrapper for `:ls` that allows you to
+reopen buffers in the current window, in a split, or in a tab. It's different
+from BufExplorer in that it previews the buffer under the cursor when you move
+around with `j` and `k`. It also gives you some other niceties, like
+incremental filtering, sorting, and pinning.
+
+REQUIREMENTS                       *rebuff-requirements*
+
+Rebuff uses timers, which means it requires at least vim 8.0.
+
+DEPENDENCIES                       *rebuff-dependencies*
+
+  1. vim-lodash      <https://github.com/tandrewnichols/vim-lodash>
+  2. vim-rumrunner   <https://github.com/tandrewnichols/vim-rumrunner>
+  3. vim-projectroot <https://github.com/dbakker/vim-projectroot>
+
+INSTALLATION                       *rebuff-installation*
+
+  1. Manual
+  
+     Clone this repository and copy the files in plugin/, autoload/, and doc/
+     to their respective directories in your vimfiles, or copy the text from
+     the github repository into new files in those directories. Make sure to
+     run `:helptag`.
+
+  2. Plug <https://github.com/junegunn/vim-plug>
+
+     Add the following to your vimrc, or something sourced therein: >
+
+       Plug 'tandrewnichols/vim-lodash'
+       Plug 'tandrewnichols/vim-rumrunner'
+       Plug 'dbakker/vim-projectroot'
+       Plug 'tandrewnichols/vim-rebuff'
+<
+     Then install via `:PlugInstall`
+
+  3. Vundle <https://github.com/gmarik/Vundle.vim>
+
+     Add the following to your vimrc, or something sourced therein: >
+
+       Plugin 'tandrewnichols/vim-lodash'
+       Plugin 'tandrewnichols/vim-rumrunner'
+       Plugin 'dbakker/vim-projectroot'
+       Plugin 'tandrewnichols/vim-rebuff'
+<
+     Then install via `:BundleInstall`
+
+  4. NeoBundle <https://github.com/Shougo/neobundle.vim>
+
+     Add the following to your vimrc, or something sourced therein: >
+
+       NeoBundle 'tandrewnichols/vim-lodash'
+       NeoBundle 'tandrewnichols/vim-rumrunner'
+       NeoBundle 'dbakker/vim-projectroot'
+       NeoBundle 'tandrewnichols/vim-rebuff'
+<
+     Then install via `:BundleInstall`
+
+  5. Pathogen <https://github.com/tpope/vim-pathogen> >
+
+       git clone https://github.com/tandrewnichols/vim-lodash.git ~/.vim/bundle/vim-lodash
+       git clone https://github.com/tandrewnichols/vim-rumrunner.git ~/.vim/bundle/vim-rumrunner
+       git clone https://github.com/dbakker/vim-projectroot ~/.vim/bundle/vim-projectroot
+       git clone https://github.com/jlanzarotta/vim-rebuff.git ~/.vim/bundle/vim-rebuff
+<
+     Then run `:Helptags`
+
+COMMANDS                           *rebuff-commands*
+
+                                   *rebuff-:Rebuff*
+:Rebuff            Open the Rebuff buffer list.
+
+                                  *rebuff-:Ls*
+:Ls                Same as |:Rebuff|. Provided for symmetry with the
+                   `:ls` command.
+
+FUNCTIONS                          *rebuff-functions*
+
+While there autoload functions for the complete functionality of Rebuff, only
+two were designed as user facing.
+
+                                   *rebuff#remap()*
+rebuff#remap       To simplify the process of overriding buffer specific
+                   mappings for Rebuff, this function may be called with any
+                   number of key/plug sets to remap.  Because `rebuff` needs
+                   to be sourced for this function to be be available, you'll
+                   have to call it in an `after/plugin` script. >
+
+                   rebuff#remap(
+                     \  ['a', "<Plug>RebuffJumpToTop"],
+                     \  ['z', "<Plug>RebuffJumpToBottom"]
+                     \)
+<
+                                   *rebuff#map()*
+rebuff#map         If you don't want to mess with `after/plugin` you can call
+                   `rebuff#map` once for each mapping you want to override
+                   inside a BufWinEnter autocommand, like this: >
+
+                   function! s:OverrideRebuff()
+                     call rebuff#map('a', "<Plug>RebuffJumpToTop")
+                     call rebuff#map('z', "<Plug>RebuffJumpToBottom")
+                   endfunction
+
+                   augroup OverrideRebuff
+                     au!
+                     au BufWinEnter \[Rebuff\] call s:OverrideRebuff()
+                   augroup END
+<
+MAPPINGS                           *rebuff-mappings*
+
+Only the first mapping listed here is defined globally. The others are all
+specific to the Rebuff buffer list, and are defined with the <buffer> option.
+See |rebuff-plugs| if you want to override any of these mappings.
+
+ Mapping      Description ~
+                                   *rebuff-ls*
+ <leader>ls   Open the Rebuff buffer. This is the only global mapping.
+
+                                   *rebuff-?*
+ ?            Toggle whether the help text is shown at the bottom of the
+              Rebuff buffer.
+
+                                   *rebuff-<CR>*
+ <count><CR>  Without a <count>, activate the buffer under the cursor. With a
+              <count>, jump to buffer number <count> and either preview it or
+              activate it (depending on the value of
+              g:|rebuff.open_with_count|).
+
+                                   *rebuff-<ESC>*
+ <Esc>        Close Rebuff and return to the original buffer.
+
+                                   *rebuff--*
+ -            Delete the buffer under the cursor (i.e. `:bdelete`).
+
+                                   *rebuff-+*
+ +            Toggle whether only modified files are shown.
+
+                                   *rebuff-.*
+ .            Filter the buffer list by extension. If you have
+              g:rebuff.open_filter_single_file set to 0, <CR> returns your
+              cursor to the Rebuff pane. If set to 1 and only one file matches
+              your filter, <CR> selects that file.  You can also use <C-v>,
+              (vertical split) <C-h>, (horizontal split) <C-t> (tab), or <C-b>
+              (background tab) to open a single file in a different view.
+
+                                   *rebuff-/*
+ /            Filter the buffer list by arbitrary text. If you have
+              g:rebuff.open_filter_single_file set to 0, <CR> returns your
+              cursor to the Rebuff pane. If set to 1 and only one file matches
+              your filter, <CR> selects that file.  You can also use <C-v>,
+              (vertical split) <C-h>, (horizontal split) <C-t> (tab), or <C-b>
+              (background tab) to open a single file in a different view.
+
+                                   *rebuff-~*
+ ~            Toggle whether only files from your current project are shown.
+
+                                   *rebuff-%*
+ %            Jump to the current file and select it.
+
+                                   *rebuff-#*
+ #            Jump to the alternate file and select it.
+
+                                   *rebuff-}*
+ }            Jump to the bottom of the buffer list.
+
+                                   *rebuff-{*
+ {            Jump to the top of the buffer list.
+
+                                   *rebuff-d*
+ d            Toggle whether directories are shown.
+
+                                   *rebuff-e*
+ e            Sort the buffer list by extension.
+
+                                   *rebuff-f*
+ f            Sort the buffer list by file name.
+
+                                   *rebuff-h*
+ h            Toggle whether hidden buffers are shown.
+
+                                   *rebuff-H*
+ H            Toggle whether help entries are shown.
+
+                                   *rebuff-i*
+ i            Always include this buffer in the buffer list, even if it's a
+              type that would not normally be shown.
+
+                                   *rebuff-j*
+ j            Move down a line and preview the next buffer.
+
+                                   *rebuff-k*
+ k            Move up a line and preview the previous buffer.
+
+                                   *rebuff-M*
+ M            Sort the buffer list by most recent used buffer.
+
+                                   *rebuff-n*
+ n            Sort the buffer list by buffer number.
+
+                                   *rebuff-p*
+ p            Pin this file to the type, regardless of sort order.
+
+                                   *rebuff-P*
+ P            Sort the buffer list by project.
+
+                                   *rebuff-q*
+ q            Close Rebuff and return to the original buffer.
+
+                                   *rebuff-r*
+ r            Reset the buffer list, including toggles, sorts, and filters.
+
+                                   *rebuff-R*
+ R            Reverse the current buffer list.
+
+                                   *rebuff-s*
+ <count>s     Without a <count>, activate the buffer under the cursor in a
+              horizontal split with the original buffer. With a <count>, jump to
+              buffer number <count> and either preview it or activate it in a
+              horizontal split (depending on the value of
+              g:rebuff.open_with_count).
+
+                                   *rebuff-S*
+ S            Cycle through sort methods (mru, number, file name, extension,
+              project root).
+
+                                   *rebuff-t*
+ <count>t     Without a <count>, activate the buffer under the cursor in a new
+              tab. With a <count>, jump to buffer number <count> and either
+              preview it or activate it in a new tab (depending on the value
+              of g:rebuff.open_with_count).
+
+                                   *rebuff-T*
+ <count>T     Without a <count>, activate the buffer under the cursor in a new
+              tab, but keep the original buffer focused. With a <count>, jump to
+              buffer number <count> and either preview it or activate it in a
+              background tab (depending on the value of
+              g:rebuff.open_with_count).
+
+                                   *rebuff-u*
+ u            Toggle whether unlisted buffers are shown.
+
+                                   *rebuff-v*
+ <count>v     Without a <count>, activate the buffer under the cursor in a
+              vertical split with the original buffer. With a <count>, jump to
+              buffer number <count> and either preview it or activate it in a
+              horizontal split (depending on the value of
+              g:rebuff.open_with_count).
+
+                                   *rebuff-w*
+ w            Wipeout the buffer under the cursor. (i.e. :bwipeout)
+
+                                   *rebuff-x*
+ x            Toggle whether top content is shown.
+
+                                   *rebuff-y*
+ y            Copy the buffer name under the cursor to the unnamed register.
+
+                                   *rebuff-<Down>*
+ <Down>       Just like j.
+                                   *rebuff-<Up>*
+ <Up>         Just like k.
+
+PLUGS                              *rebuff-plugs*
+
+All of the Rebuff mappings are assigned via plugs, so feel free to customize
+any mapping you want.
+
+ Default Map   Plug ~
+                                   *rebuff-plug-ls*
+ <leader>ls   <Plug>RebuffOpen
+
+                                   *rebuff-plug-?*
+ ?            <Plug>RebuffToggleHelpText
+
+                                   *rebuff-plug-<CR>*
+ <count><CR>  <Plug>RebuffSelect
+
+                                   *rebuff-plug-<ESC>*
+ <Esc>        <Plug>RebuffEscape
+
+                                   *rebuff-plug--*
+ -            <Plug>RebuffDeleteBuffer
+
+                                   *rebuff-plug-+*
+ +            <Plug>RebuffToggleModified
+
+                                   *rebuff-plug-.*
+ .            <Plug>RebuffFilterByExtension
+
+                                   *rebuff-plug-/*
+ /            <Plug>RebuffFilterByText
+
+                                   *rebuff-plug-~*
+ ~            <Plug>RebuffToggleInProject
+
+                                   *rebuff-plug-%*
+ %            <Plug>RebuffJumpToCurrent
+
+                                   *rebuff-plug-#*
+ #            <Plug>RebuffJumpToAlternate
+
+                                   *rebuff-plug-}*
+ }            <Plug>RebuffJumpToBottom
+
+                                   *rebuff-plug-{*
+ {            <Plug>RebuffJumpToTop
+
+                                   *rebuff-plug-d*
+ d            <Plug>RebuffToggleDirectories
+
+                                   *rebuff-plug-e*
+ e            <Plug>RebuffSortByExtension
+
+                                   *rebuff-plug-f*
+ f            <Plug>RebuffSortByFilename
+
+                                   *rebuff-plug-h*
+ h            <Plug>RebuffToggleHidden
+
+                                   *rebuff-plug-H*
+ H            <Plug>RebuffToggleHelpEntries
+
+                                   *rebuff-plug-i*
+ i            <Plug>RebuffInclude
+
+                                   *rebuff-plug-j*
+ j            <Plug>RebuffMoveDown
+
+                                   *rebuff-plug-k*
+ k            <Plug>RebuffMoveUp
+
+                                   *rebuff-plug-M*
+ M            <Plug>RebuffSortByMRU
+
+                                   *rebuff-plug-n*
+ n            <Plug>RebuffSortByBufferNumber
+
+                                   *rebuff-plug-p*
+ p            <Plug>RebuffPin
+
+                                   *rebuff-plug-P*
+ P            <Plug>RebuffSortByProject
+
+                                   *rebuff-plug-q*
+ q            <Plug>RebuffRestoreOriginal
+
+                                   *rebuff-plug-r*
+ r            <Plug>RebuffReset
+
+                                   *rebuff-plug-R*
+ R            <Plug>RebuffReverse
+
+                                   *rebuff-plug-s*
+ <count>s     <Plug>RebuffHorizontalSplit
+
+                                   *rebuff-plug-S*
+ S            <Plug>RebuffToggleSort
+
+                                   *rebuff-plug-t*
+ <count>t     <Plug>RebuffOpenInTab
+
+                                   *rebuff-plug-T*
+ <count>T     <Plug>RebuffOpenInBackgroundTab
+
+                                   *rebuff-plug-u*
+ u            <Plug>RebuffToggleUnlisted
+
+                                   *rebuff-plug-v*
+ <count>v     <Plug>RebuffVerticalSplit
+
+                                   *rebuff-plug-w*
+ w            <Plug>RebuffWipeoutBuffer
+
+                                   *rebuff-plug-x*
+ x            <Plug>RebuffToggleTop
+
+                                   *rebuff-plug-y*
+ y            <Plug>RebuffCopyPath
+
+                                   *rebuff-plug-<Down>*
+ <Down>       <Plug>RebuffMoveDownAlt
+
+                                   *rebuff-plug-<Up>*
+ <Up>         <Plug>RebuffMoveUpAlt
+
+OPTIONS                            *rebuff-options*
+
+                                   *rebuff.show_unlisted*
+Show unlisted buffers in Rebuff buffer list. Toggle this within Rebuff using
+`u`.
+Default: 0
+
+                                   *rebuff.show_directories*
+Show directories in Rebuff buffer list. Toggle this within Rebuff using `d`.
+Default: 0
+
+                                   *rebuff.show_hidden*
+Show hidden buffers in Rebuff buffer list. Toggle this within Rebuff using `h`.
+Default: 1
+
+                                   *rebuff.show_help*
+Show help at the bottom when Rebuff opens. Toggle this within Rebuff using `?`.
+Default: 0
+
+                                   *rebuff.show_top_content*
+Show the Rebuff logo at the top. Toggle this within Rebuff using `x`.
+Default: 1
+
+                                   *rebuff.default_sort_order*
+Change the starting sort order. Most recently used is probably preferable most
+of the time, but you can rotate through the various sort methods with `S` or
+set a particular sort method using `e` (extension), `f` (filename), `M` (most
+recently used), `n` (buffer number), or `P` (project). Possible values: 'mru',
+'num', 'name', 'extension', 'project'. All of these are self explanatory except
+maybe `project`, which sorts based on the root directory of the project
+(determined by vim-projectroot). This has the effect of grouping files by
+repository.
+Default: 'mru'
+
+                                   *rebuff.vertical_split*
+Open Rebuff in a vertical split.
+Default: 1
+
+                                   *rebuff.window_size*
+The width of the Rebuff split when vertical. The size is ignored on horizontal
+splits, defaulting to half the window.
+Default: 80
+
+                                   *rebuff.relative_to_project*
+Show buffer names relative to the project root. When set to 0, file names will
+be shown exactly as they appear in `:ls`.
+Default: 1
+
+                                   *rebuff.show_help_entries*
+Show help entries in the Rebuff buffer list.
+Default: 0
+
+                                   *rebuff.open_with_count*
+The select buffer mappings (`<CR>`, `v`, `s`, `t`, and `T`) take a count. If
+this option is 1, the buffer number matching count will be automatically opened
+in the right view. If it is 0, the cursor will be positioned on that buffer
+(and it will be previewed in the other pane), but it won't be opened
+automatically. Which means to open a file by number, you have to type
+`<count><CR><CR>`.
+Default: 1
+
+                                   *rebuff.copy_absolute_path*
+When copying the file name of a buffer using `y`, use an absolute path instead
+of a relative one.
+Default: 1
+
+                                   *rebuff.incremental_filter*
+When filtering with `.` or `/` and this options is set to 1, the buffer list
+will be upated on each key stroke. If this option is 0, the filter won't be
+applied until you hit `<CR>`.
+Default: 1
+
+                                   *rebuff.preserve_toggles*
+Keep any toggles set when Rebuff closes. If this is set to 1, and you toggle
+on, for example, unlisted files, the next time you open Rebuff, unlisted files
+will still be shown.
+Default: 0
+
+                                   *rebuff.window_position*
+Where to position the Rebuff pane. If set to `rightbelow` or `leftabove`, that
+option will be used. Set to 0 to use whatever default you've set in vim.
+Default: 'rightbelow'
+
+                                   *rebuff.preview*
+I mean, the whole point of this plugin (in my opinion) is to preview files, but
+if you don't like that behavior (or find it a bit laggy), you can turn it off,
+in which case it works more or less like any other buffer explorer.
+Default: 1
+
+                                   *rebuff.reset_timeout*
+By default, Rebuff changes the `timeoutlen` option to 0 when it opens
+(`timeoutlen` is global, so unfortunately `setlocal` is not possible here), and
+resets it to whatever it was when it closes. That's because it makes previewing
+a bit smoother, but you can tell it to leave your options alone if you like.
+Default: 1
+
+                                   *rebuff.debounce_preview*
+When moving up or down, the previewing functionality is actually debounced via
+timer, so that if you hit `j` or `k` a bunch of times in a row, it scrolls more
+smoothly by skipping the preview. I've found that 150 is a pretty nice balance
+between scrolling quickly but still rendering the preview non-sluggishly, but
+you can set this to some other (millisecond) number if this doesn't suit you.
+Default: 150
+
+                                   *rebuff.open_filter_single_file*
+When filtering with `.` or `/`, if only one file matches and this option is set
+to 1, hitting `<CR>` selects that file instead of returning you to the Rebuff
+pane. You can also use If this option is set to 1 and only one file matches,
+you can also use `<C-v>` to open in a vertical split, `<C-h>` to open in a
+horizontal split, `<C-t>` to open in a tab, or `<C-b>` to open in a background
+tab.
+Default: 1
+
+ISSUES                             *rebuff-issues*
+
+If you experience issues using vim-rebuff, please report them at
+<https://github.com/tandrewnichols/vim-rebuff/issues>.
+
+CONTRIBUTING                       *rebuff-contributing*
+
+I always try to be open to suggestions, but I do still have opinions about what
+this should and should not be so . . . it never hurts to ask before investing a
+lot of time on a patch.
+
+LICENSE                            *rebuff-license*
+
+The MIT License (MIT)
+
+Copyright (c) 2018 Andrew Nichols
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+vim:tw=78:ts=2:ft=help:norl:

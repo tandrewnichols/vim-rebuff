@@ -18,9 +18,19 @@ This plugin uses timers, which means it requires at least vim 8.0.
 
 This plugin has three dependencies. I regret that slightly, since vim has no simple way to manage or install dependencies, but those dependencies are definitely stand-alone things that don't belong in this plugin, so you'll have to install them along with this plugin. Fortunately, this is pretty easy to do with a decent plugin manager. For what it's worth, I use `Plug` to manage my plugins, and I really like it, so if you don't have a plugin manager, I recommend that one.
 
-### Manually
+#### Manually
 
 If you're the type of person that doesn't use a plugin manager, prefering instead to do it manually, you probably already know the process here. This isn't on vim.org (atm), but you can get the source from here on github (either by cloning it or just copying the files in `plugin/`, `autoload/`, and `doc/` to the right places and then sourcing them in your .vimrc.
+
+#### Plug (https://github.com/junegunn/vim-plug)
+1. In your .vimrc or something sourced therein:
+  ```
+  Plug 'tandrewnichols/vim-lodash'
+  Plug 'tandrewnichols/vim-rumrunner'
+  Plug 'dbakker/vim-projectroot'
+  Plug 'tandrewnichols/vim-rebuff'
+  ```
+2. Install with `:PlugInstall`.
 
 #### Vundle (https://github.com/gmarik/Vundle.vim)
 1. In your .vimrc or something sourced therein:
@@ -41,16 +51,6 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
   NeoBundle 'tandrewnichols/vim-rebuf'
   ```
 2. Install with `:NeoBundleInstall`.
-
-#### Plug (https://github.com/junegunn/vim-plug)
-1. In your .vimrc or something sourced therein:
-  ```
-  Plug 'tandrewnichols/vim-lodash'
-  Plug 'tandrewnichols/vim-rumrunner'
-  Plug 'dbakker/vim-projectroot'
-  Plug 'tandrewnichols/vim-rebuff'
-  ```
-2. Install with `:PlugInstall`.
 
 #### Pathogen
 1. git clone https://github.com/tandrewnichols/vim-lodash.git ~/.vim/bundle/vim-lodash
@@ -87,7 +87,7 @@ All of these mappings are associated with `<Plug>`s, so you can remap any of the
 | `#` | `<Plug>RebuffJumpToAlternate` | Jump to the alternate file and select it. |
 | `}` | `<Plug>RebuffJumpToBottom` | Jump to the bottom of the buffer list. |
 | `{` | `<Plug>RebuffJumpToTop` | Jump to the top of the buffer list. |
-| `d` | `<Plug>RebuffToggleDirectories` | Toggle whethe directories are shown. |
+| `d` | `<Plug>RebuffToggleDirectories` | Toggle whether directories are shown. |
 | `e` | `<Plug>RebuffSortByExtension` | Sort the buffer list by extension. |
 | `f` | `<Plug>RebuffSortByFilename` | Sort the buffer list by file name. |
 | `h` | `<Plug>RebuffToggleHidden` | Toggle whether hidden buffers are shown. |
