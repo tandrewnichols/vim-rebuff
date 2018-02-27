@@ -112,17 +112,26 @@ All of these mappings are associated with `<Plug>`s, so you can remap any of the
 | `<Down>` | `<Plug>RebuffMoveDownAlt` | Just like `j`. |
 | `<Up>` | `<Plug>RebuffMoveUpAlt` | Just like `k`. |
 
-Note that these mappings are declared with `<buffer>` so you should override them in a `autocommand`, like this:
+Because these mappings are defined as buffer local in an autocommand event, I've provided a handy wrapper for overriding them that doesn't require you to write your own autocommand. Just pass sets of overrides into `rebuff#remap`, like this:
 
 ```vim
-function! s:ChangeRebuff
- nmap a <Plug>RebuffJumpToTop
- nmap z <Plug>RebuffJumpToBottom
+call rebuff#remap(
+  \  ['a', "<Plug>RebuffJumpToTop"],
+  \  ['z', "<Plug>RebuffJumpToBottom"]
+  \)
+```
+
+Note that you'll need to do this in an `after/plugin` script so that `rebuff#remap` is available. Alternatively, if you want to do it yourself and you don't want to create an `after/plugin` script, you can do something like this:
+
+```vim
+function! s:OverrideRebuff()
+  call rebuff#map('a', "<Plug>RebuffJumpToTop")
+  call rebuff#map('z', "<Plug>RebuffJumpToBottom")
 endfunction
 
-augroup ChangeRebuffMappings
+augroup OverrideRebuff
   au!
-  au FileType rebuff call <sid>ChangeRebuff()
+  au BufWinEnter \[Rebuff\] call s:OverrideRebuff()
 augroup END
 ```
 
