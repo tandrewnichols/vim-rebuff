@@ -1,25 +1,24 @@
 let g:rebuff = extend(g:rebuff, {
-      \  'show_unlisted': 0,
-      \  'show_directories': 0,
-      \  'show_hidden': 1,
-      \  'show_help': 0,
-      \  'show_top_content': 1,
-      \  'default_sort_order': 'mru',
-      \  'vertical_split': 1,
-      \  'window_size': 80,
-      \  'relative_to_project': 1,
-      \  'show_help_entries': 0,
-      \  'open_with_count': 1,
-      \  'copy_absolute_path': 1,
-      \  'incremental_filter': 1,
-      \  'preserve_toggles': 0,
-      \  'window_position': 'rightbelow',
-      \  'preview': 1,
-      \  'reset_timeout': 1,
-      \  'debounce_preview': 150,
-      \  'open_filter_single_file': 1
-      \}
-      \, 'keep')
+  \  'show_unlisted': 0,
+  \  'show_directories': 0,
+  \  'show_hidden': 1,
+  \  'show_help': 0,
+  \  'show_top_content': 1,
+  \  'default_sort_order': 'mru',
+  \  'vertical_split': 1,
+  \  'window_size': 80,
+  \  'relative_to_project': 1,
+  \  'show_help_entries': 0,
+  \  'open_with_count': 1,
+  \  'copy_absolute_path': 1,
+  \  'incremental_filter': 1,
+  \  'preserve_toggles': 0,
+  \  'window_position': 'rightbelow',
+  \  'preview': 1,
+  \  'reset_timeout': 1,
+  \  'debounce_preview': 150,
+  \  'open_filter_single_file': 1
+  \}, 'keep')
 
 
 hi RebuffAccent cterm=bold ctermbg=none ctermfg=red
@@ -28,49 +27,49 @@ sign define rebuff_eye text=👁️
 let s:pinned = []
 let s:included = []
 let s:logo = [
-      \  '   ___      __        ______',
-      \  '  / _ \___ / /  __ __/ _/ _/',
-      \  ' / , _/ -_) _ \/ // / _/ _/ ',
-      \  '/_/|_|\__/_.__/\_,_/_//_/   '
-      \]
+  \  '   ___      __        ______',
+  \  '  / _ \___ / /  __ __/ _/ _/',
+  \  ' / , _/ -_) _ \/ // / _/ _/ ',
+  \  '/_/|_|\__/_.__/\_,_/_//_/   '
+  \]
 
 let s:help_legend = [
-      \ ['?',            'Toggle help.'],
-      \ ['[count]<CR>',  'With count, jump to or open buffer number [count]. Without count, open buffer under cursor.'],
-      \ ['-',            'Delete buffer under cursor.'],
-      \ ['+',            'Show only modified files.'],
-      \ ['.',            'Filter by file extension.'],
-      \ ['/',            'Filter by arbitrary text.'],
-      \ ['~',            'Show only files in this project.'],
-      \ ['%',            'Open current buffer.'],
-      \ ['#',            'Open alternate buffer.'],
-      \ ['}',            'Jump to bottom of list.'],
-      \ ['{',            'Jump to top of list.'],
-      \ ['d',            'Toggle whether directories are shown.'],
-      \ ['e',            'Sort by file extension.'],
-      \ ['f',            'Sort by filename.'],
-      \ ['h',            'Toggle whether hidden buffers are shown.'],
-      \ ['H',            'Toggle help entries.'],
-      \ ['i',            'Include this file in results, even if it normally wouldn''t be'],
-      \ ['j | <Down>',   'Preview next buffer.'],
-      \ ['k | <Up>',     'Preview previous buffer.'],
-      \ ['M',            'Sort by MRU.'],
-      \ ['n',            'Sort by buffer number.'],
-      \ ['p',            'Pin entry to top.'],
-      \ ['P',            'Sort by project.'],
-      \ ['q | <Esc>',    'Close Rebuff and revert to original buffer.'],
-      \ ['r',            'Reset original buffer list.'],
-      \ ['R',            'Reverse current buffer listing.'],
-      \ ['s',            'Open buffer under cursor in horizontal split.'],
-      \ ['S',            'Toggle sort method.'],
-      \ ['t',            'Open buffer under cursor in new tab.'],
-      \ ['T',            'Open buffer under cursor in background tab.'],
-      \ ['u',            'Toggle whether unlisted buffers are shown.'],
-      \ ['v',            'Open buffer under cursor in vertical split.'],
-      \ ['w',            'Wipeout buffer under cursor.'],
-      \ ['x',            'Toggle top content.'],
-      \ ['y',            'Copy path of buffer under cursor.']
-      \]
+  \ ['?',            'Toggle help.'],
+  \ ['[count]<CR>',  'With count, jump to or open buffer number [count]. Without count, open buffer under cursor.'],
+  \ ['-',            'Delete buffer under cursor.'],
+  \ ['+',            'Show only modified files.'],
+  \ ['.',            'Filter by file extension.'],
+  \ ['/',            'Filter by arbitrary text.'],
+  \ ['~',            'Show only files in this project.'],
+  \ ['%',            'Open current buffer.'],
+  \ ['#',            'Open alternate buffer.'],
+  \ ['}',            'Jump to bottom of list.'],
+  \ ['{',            'Jump to top of list.'],
+  \ ['d',            'Toggle whether directories are shown.'],
+  \ ['e',            'Sort by file extension.'],
+  \ ['f',            'Sort by filename.'],
+  \ ['h',            'Toggle whether hidden buffers are shown.'],
+  \ ['H',            'Toggle help entries.'],
+  \ ['i',            'Include this file in results, even if it normally wouldn''t be'],
+  \ ['j | <Down>',   'Preview next buffer.'],
+  \ ['k | <Up>',     'Preview previous buffer.'],
+  \ ['M',            'Sort by MRU.'],
+  \ ['n',            'Sort by buffer number.'],
+  \ ['p',            'Pin entry to top.'],
+  \ ['P',            'Sort by project.'],
+  \ ['q | <Esc>',    'Close Rebuff and revert to original buffer.'],
+  \ ['r',            'Reset original buffer list.'],
+  \ ['R',            'Reverse current buffer listing.'],
+  \ ['s',            'Open buffer under cursor in horizontal split.'],
+  \ ['S',            'Toggle sort method.'],
+  \ ['t',            'Open buffer under cursor in new tab.'],
+  \ ['T',            'Open buffer under cursor in background tab.'],
+  \ ['u',            'Toggle whether unlisted buffers are shown.'],
+  \ ['v',            'Open buffer under cursor in vertical split.'],
+  \ ['w',            'Wipeout buffer under cursor.'],
+  \ ['x',            'Toggle top content.'],
+  \ ['y',            'Copy path of buffer under cursor.']
+  \]
 
 function! rebuff#open()
   call rum#suspend()
@@ -217,19 +216,19 @@ function! rebuff#relativeTo(name, where)
 endfunction
 
 let s:flags = {
-      \  'unlisted': 'u',
-      \  'current': '%',
-      \  'alternate': '#',
-      \  'active': 'a',
-      \  'hidden': 'h',
-      \  'unmodifiable': '-',
-      \  'readonly': '=',
-      \  'running': 'R',
-      \  'finished': 'F',
-      \  'terminal': '[RF\?]',
-      \  'modified': '+',
-      \  'error': 'x'
-      \}
+  \  'unlisted': 'u',
+  \  'current': '%',
+  \  'alternate': '#',
+  \  'active': 'a',
+  \  'hidden': 'h',
+  \  'unmodifiable': '-',
+  \  'readonly': '=',
+  \  'running': 'R',
+  \  'finished': 'F',
+  \  'terminal': '[RF\?]',
+  \  'modified': '+',
+  \  'error': 'x'
+  \}
 
 function! rebuff#checkFlags(entry)
   let entry = a:entry
@@ -264,16 +263,16 @@ function! rebuff#setBufferFlags()
   let b:current_sort = 'mru'
   let b:current_filter = ''
   let b:toggles = exists('s:toggles') ? s:toggles : {
-        \  'help': g:rebuff.show_help,
-        \  'help_entries': g:rebuff.show_help_entries,
-        \  'top_content': g:rebuff.show_top_content,
-        \  'unlisted': g:rebuff.show_unlisted,
-        \  'directories': g:rebuff.show_directories,
-        \  'hidden': g:rebuff.show_hidden,
-        \  'in_project': 0,
-        \  'modified_only': 0,
-        \  'reverse': 0
-        \}
+    \  'help': g:rebuff.show_help,
+    \  'help_entries': g:rebuff.show_help_entries,
+    \  'top_content': g:rebuff.show_top_content,
+    \  'unlisted': g:rebuff.show_unlisted,
+    \  'directories': g:rebuff.show_directories,
+    \  'hidden': g:rebuff.show_hidden,
+    \  'in_project': 0,
+    \  'modified_only': 0,
+    \  'reverse': 0
+    \}
   if exists('b:matched_filter') && !empty(b:matched_filter)
     try
       call matchdelete(b:matched_filter)
@@ -461,10 +460,10 @@ function! rebuff#openInOtherSplit(num)
 endfunction
 
 let s:filters = {
-      \ 'directories': '!v:val.directory',
-      \ 'hidden': '!v:val.hidden',
-      \ 'help_entries': '!v:val.help',
-      \}
+  \ 'directories': '!v:val.directory',
+  \ 'hidden': '!v:val.hidden',
+  \ 'help_entries': '!v:val.help',
+  \}
 
 function! rebuff#filter()
   let list = copy(b:buffer_objects)
@@ -750,14 +749,14 @@ endfunction
 function! rebuff#buildInfoLine()
   let size = rebuff#getSize() - 1
   let line = [
-        \ 'Dirs: ' . b:toggles.directories,
-        \ 'Hidden: ' . b:toggles.hidden,
-        \ 'Unlisted: ' . b:toggles.unlisted,
-        \ 'Mod: ' . b:toggles.modified_only,
-        \ 'Help: ' . b:toggles.help_entries,
-        \ 'Proj: ' . b:toggles.in_project,
-        \ 'Sort: ' . b:current_sort
-        \]
+    \ 'Dirs: ' . b:toggles.directories,
+    \ 'Hidden: ' . b:toggles.hidden,
+    \ 'Unlisted: ' . b:toggles.unlisted,
+    \ 'Mod: ' . b:toggles.modified_only,
+    \ 'Help: ' . b:toggles.help_entries,
+    \ 'Proj: ' . b:toggles.in_project,
+    \ 'Sort: ' . b:current_sort
+    \]
   return g:_.padStart(join(line, ' '), size)
 endfunction
 
