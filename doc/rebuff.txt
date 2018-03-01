@@ -90,7 +90,7 @@ INSTALLATION                       *rebuff-installation*
      git clone https://github.com/tandrewnichols/vim-lodash.git
      git clone https://github.com/tandrewnichols/vim-rumrunner.git
      git clone https://github.com/dbakker/vim-projectroot.git
-     git clone https://github.com/jlanzarotta/vim-rebuff.git
+     git clone https://github.com/tandrewnichols/vim-rebuff.git
 <
      Then run `:Helptags`
 

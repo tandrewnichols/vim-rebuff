@@ -56,7 +56,7 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
 1. git clone https://github.com/tandrewnichols/vim-lodash.git ~/.vim/bundle/vim-lodash
 2. git clone https://github.com/tandrewnichols/vim-rumrunner.git ~/.vim/bundle/vim-rumrunner
 3. git clone https://github.com/dbakker/vim-projectroot ~/.vim/bundle/vim-projectroot
-4. git clone https://github.com/jlanzarotta/vim-rebuff.git ~/.vim/bundle/vim-rebuff
+4. git clone https://github.com/tandrewnichols/vim-rebuff.git ~/.vim/bundle/vim-rebuff
 
 ## Commands
 
