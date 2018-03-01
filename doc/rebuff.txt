@@ -55,10 +55,10 @@ INSTALLATION                       *rebuff-installation*
 
      Add the following to your vimrc, or something sourced therein: >
 
-       Plug 'tandrewnichols/vim-lodash'
-       Plug 'tandrewnichols/vim-rumrunner'
-       Plug 'dbakker/vim-projectroot'
-       Plug 'tandrewnichols/vim-rebuff'
+     Plug 'tandrewnichols/vim-lodash'
+     Plug 'tandrewnichols/vim-rumrunner'
+     Plug 'dbakker/vim-projectroot'
+     Plug 'tandrewnichols/vim-rebuff'
 <
      Then install via `:PlugInstall`
 
@@ -66,10 +66,10 @@ INSTALLATION                       *rebuff-installation*
 
      Add the following to your vimrc, or something sourced therein: >
 
-       Plugin 'tandrewnichols/vim-lodash'
-       Plugin 'tandrewnichols/vim-rumrunner'
-       Plugin 'dbakker/vim-projectroot'
-       Plugin 'tandrewnichols/vim-rebuff'
+     Plugin 'tandrewnichols/vim-lodash'
+     Plugin 'tandrewnichols/vim-rumrunner'
+     Plugin 'dbakker/vim-projectroot'
+     Plugin 'tandrewnichols/vim-rebuff'
 <
      Then install via `:BundleInstall`
 
@@ -77,19 +77,20 @@ INSTALLATION                       *rebuff-installation*
 
      Add the following to your vimrc, or something sourced therein: >
 
-       NeoBundle 'tandrewnichols/vim-lodash'
-       NeoBundle 'tandrewnichols/vim-rumrunner'
-       NeoBundle 'dbakker/vim-projectroot'
-       NeoBundle 'tandrewnichols/vim-rebuff'
+     NeoBundle 'tandrewnichols/vim-lodash'
+     NeoBundle 'tandrewnichols/vim-rumrunner'
+     NeoBundle 'dbakker/vim-projectroot'
+     NeoBundle 'tandrewnichols/vim-rebuff'
 <
      Then install via `:BundleInstall`
 
   5. Pathogen <https://github.com/tpope/vim-pathogen> >
 
-       git clone https://github.com/tandrewnichols/vim-lodash.git ~/.vim/bundle/vim-lodash
-       git clone https://github.com/tandrewnichols/vim-rumrunner.git ~/.vim/bundle/vim-rumrunner
-       git clone https://github.com/dbakker/vim-projectroot ~/.vim/bundle/vim-projectroot
-       git clone https://github.com/jlanzarotta/vim-rebuff.git ~/.vim/bundle/vim-rebuff
+     cd ~/.vim/bundle
+     git clone https://github.com/tandrewnichols/vim-lodash.git
+     git clone https://github.com/tandrewnichols/vim-rumrunner.git
+     git clone https://github.com/dbakker/vim-projectroot.git
+     git clone https://github.com/jlanzarotta/vim-rebuff.git
 <
      Then run `:Helptags`
 
