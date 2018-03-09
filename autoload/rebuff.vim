@@ -255,7 +255,7 @@ function! rebuff#createAugroup()
     autocmd BufWinEnter \[Rebuff\] call rebuff#setMappings()
     autocmd BufWinLeave \[Rebuff\] call rebuff#onExit()
     autocmd BufLeave \[Rebuff\] call rebuff#resetTimeout()
-    autocmd BufWipeout \[Rebuff\] call rum#resume()
+    autocmd BufHidden \[Rebuff\] call rum#resume()
   augroup END
 endfunction
 
