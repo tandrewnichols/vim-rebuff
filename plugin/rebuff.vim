@@ -23,7 +23,7 @@ function! Rebuff()
     echo 'Rebuff requires vim-rumrunner. See https://github.com/tandrewnichols/vim-rumrunner.'
   endif
 
-  if !exists("loaded_projectroot")
+  if !exists("g:loaded_projectroot")
     echo 'Rebuff requires vim-projectroot. See https://github.com/dbakker/vim-projectroot.'
   endif
 
