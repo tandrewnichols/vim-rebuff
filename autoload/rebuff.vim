@@ -239,7 +239,7 @@ function! rebuff#checkFlags(entry)
   let flags = entry.flags
 
   for key in keys(s:flags)
-    let entry[ key ] = g:_.includes(flags, s:flags[key])
+    let entry[ key ] = match(flags, s:flags[key]) > -1
   endfor
 
   let found = g:_.find(s:pinned, { 'num': entry.num })
