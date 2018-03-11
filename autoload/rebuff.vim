@@ -24,6 +24,8 @@ let g:rebuff = extend(g:rebuff, {
   \  'open_filter_single_file': 1
   \}, 'keep')
 
+let g:rebuff.VERSION = '0.0.1'
+
 
 hi RebuffAccent cterm=bold ctermbg=none ctermfg=red
 sign define rebuff_pin text=📌
