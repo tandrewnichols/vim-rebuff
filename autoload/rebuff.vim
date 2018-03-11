@@ -292,7 +292,6 @@ function! rebuff#configureBuffer()
   setlocal nonumber
   setlocal foldcolumn=0
   setlocal nofoldenable
-  setlocal cursorline
   setlocal nospell
   setlocal nobuflisted
   setlocal filetype=rebuff
