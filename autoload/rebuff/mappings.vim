@@ -1,3 +1,7 @@
+if exists("g:autoloaded_rebuff_mappings") | finish | endif
+
+let g:autoloaded_rebuff_mappings = 1
+
 function! rebuff#mappings#toggle(option)
   let b:toggles[ a:option ] = !b:toggles[ a:option ]
   call rebuff#render()
