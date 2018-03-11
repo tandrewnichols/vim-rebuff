@@ -6,7 +6,9 @@ if !exists('g:rebuff')
   let g:rebuff = {}
 endif
 
-call rum#ignore('\[Rebuff\]')
+if exists('*rum#ignore')
+  call rum#ignore('\[Rebuff\]')
+endif
 
 function! Rebuff()
   " Dependencies :(
