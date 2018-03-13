@@ -332,8 +332,8 @@ call s:Plug('MoveUpAlt', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
 call s:Plug('SortByBufferNumber', ":call rebuff#mappings#setSortTo('num')")
 call s:Plug('Pin', ":call rebuff#mappings#pin(rebuff#pins())")
 call s:Plug('SortByProject', ":call rebuff#mappings#setSortTo('project')")
-call s:Plug('RestoreOriginal', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:q")
-call s:Plug('Escape', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:q")
+call s:Plug('RestoreOriginal', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:call rebuff#wrapQ()")
+call s:Plug('Escape', ":call rebuff#mappings#restoreOriginalBuffer()\<CR>:call rebuff#wrapQ()")
 call s:Plug('Reverse', ":call rebuff#mappings#toggle('reverse')")
 call s:Plug('Reset', ":call rebuff#mappings#reset()")
 call s:Plug('HorizontalSplit', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferIn(''split'', v:count)', v:count)")
@@ -786,4 +786,13 @@ function! rebuff#sortByMRU(list)
   endfor
 
   return newlist
+endfunction
+
+function! rebuff#wrapQ() abort
+  if winnr('$') > 2
+    q
+    wincmd p
+  else
+    q
+  endif
 endfunction

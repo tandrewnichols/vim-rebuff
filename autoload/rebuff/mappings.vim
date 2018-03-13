@@ -23,7 +23,7 @@ function! rebuff#mappings#wrapSelect(fn, count, ...)
 endfunction
 
 function! rebuff#mappings#open(count)
-  q
+  call rebuff#wrapQ()
   if !empty(a:count)
     exec "b" a:count
   endif
@@ -214,7 +214,7 @@ function! rebuff#mappings#openCurrentBufferInTab(count, ...)
   call rebuff#mappings#restoreOriginalBuffer()
   let target = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
 
-  q
+  call rebuff#wrapQ()
   exec "tabe" bufname(str2nr(target))
 
   if a:0 == 1
@@ -225,7 +225,7 @@ endfunction
 function! rebuff#mappings#openCurrentBufferIn(cmd, count)
   call rebuff#mappings#restoreOriginalBuffer()
   let num = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
-  q
+  call rebuff#wrapQ()
   exec a:cmd bufname(str2nr(num))
 endfunction
 
