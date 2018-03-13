@@ -2,12 +2,12 @@ if exists("g:autoloaded_rebuff_mappings") | finish | endif
 
 let g:autoloaded_rebuff_mappings = 1
 
-function! rebuff#mappings#toggle(option)
+function! rebuff#mappings#toggle(option) abort
   let b:toggles[ a:option ] = !b:toggles[ a:option ]
   call rebuff#render()
 endfunction
 
-function! rebuff#mappings#wrapSelect(fn, count, ...)
+function! rebuff#mappings#wrapSelect(fn, count, ...) abort
   let arg = a:0 == 1 ? a:1 : ''
 
   if !empty(a:count)
@@ -22,7 +22,7 @@ function! rebuff#mappings#wrapSelect(fn, count, ...)
   endif
 endfunction
 
-function! rebuff#mappings#open(count)
+function! rebuff#mappings#open(count) abort
   call rebuff#wrapQ()
   if !empty(a:count)
     exec "b" a:count
@@ -30,12 +30,12 @@ function! rebuff#mappings#open(count)
   normal! ze
 endfunction
 
-function! rebuff#mappings#findByNumber(count)
+function! rebuff#mappings#findByNumber(count) abort
   call search('^[ +]\+' . a:count)
   normal! 0
 endfunction
 
-function! rebuff#mappings#bufferAction(cmd)
+function! rebuff#mappings#bufferAction(cmd) abort
   " Get the buffer to delete
   let buf = rebuff#getBufferFromLine()
 
@@ -54,7 +54,7 @@ function! rebuff#mappings#bufferAction(cmd)
   exec a:cmd . "!"  buf.num
 endfunction
 
-function! rebuff#mappings#removeBuffer(buf)
+function! rebuff#mappings#removeBuffer(buf) abort
   let i = index(b:buffer_objects, a:buf)
   call remove(b:buffer_objects, i)
 endfunction
@@ -63,7 +63,7 @@ let s:search_indicators = { 'name': '/', 'extension': '/.' }
 
 let s:mod_codes = [22, 8, 20, 2]
 
-function! rebuff#mappings#filterBy(prop, start)
+function! rebuff#mappings#filterBy(prop, start) abort
   let indicator = s:search_indicators[ a:prop ]
 
   if a:start
@@ -120,7 +120,7 @@ function! rebuff#mappings#filterBy(prop, start)
   endif
 endfunction
 
-function! rebuff#mappings#tryOpen(char, code)
+function! rebuff#mappings#tryOpen(char, code) abort
   let char = a:char
   let code = a:code
   let numlines = b:buffer_range[1] - b:buffer_range[0]
@@ -141,7 +141,7 @@ function! rebuff#mappings#tryOpen(char, code)
   endif
 endfunction
 
-function! rebuff#mappings#copyPath()
+function! rebuff#mappings#copyPath() abort
   let currentBuffer = rebuff#getBufferFromLine()
   let text = currentBuffer.name
   if g:rebuff.copy_absolute_path
@@ -151,18 +151,18 @@ function! rebuff#mappings#copyPath()
   let @" = text
 endfunction
 
-function! rebuff#mappings#jumpToLine(line)
+function! rebuff#mappings#jumpToLine(line) abort
   exec a:line
   normal! 0
   call rebuff#preview()
 endfunction
 
-function! rebuff#mappings#setSortTo(type)
+function! rebuff#mappings#setSortTo(type) abort
   let b:current_sort = a:type
   call rebuff#render()
 endfunction
 
-function! rebuff#mappings#moveTo(dir, count)
+function! rebuff#mappings#moveTo(dir, count) abort
   let suffix = !empty(a:count) ? a:count . a:dir : a:dir
   exec "normal!" suffix
 
@@ -178,14 +178,14 @@ function! rebuff#mappings#moveTo(dir, count)
   endif
 endfunction
 
-function! rebuff#mappings#callPreview(...)
+function! rebuff#mappings#callPreview(...) abort
   if exists("b:preview_timeout")
     unlet b:preview_timeout
   endif
   call rebuff#preview()
 endfunction
 
-function! rebuff#mappings#pin(pinned)
+function! rebuff#mappings#pin(pinned) abort
   let entry = rebuff#getBufferFromLine()
   if !empty(entry.pinned)
     let entry.pinned = 0
@@ -200,16 +200,16 @@ function! rebuff#mappings#pin(pinned)
   call rebuff#render()
 endfunction
 
-function! rebuff#mappings#restoreOriginalBuffer()
+function! rebuff#mappings#restoreOriginalBuffer() abort
   call rebuff#openInOtherSplit(b:originBuffer)
 endfunction
 
-function! rebuff#mappings#reset()
+function! rebuff#mappings#reset() abort
   call rebuff#setBufferFlags()
   call rebuff#render(1)
 endfunction
 
-function! rebuff#mappings#openCurrentBufferInTab(count, ...)
+function! rebuff#mappings#openCurrentBufferInTab(count, ...) abort
   let curtab = tabpagenr()
   call rebuff#mappings#restoreOriginalBuffer()
   let target = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
@@ -222,7 +222,7 @@ function! rebuff#mappings#openCurrentBufferInTab(count, ...)
   endif
 endfunction
 
-function! rebuff#mappings#openCurrentBufferIn(cmd, count)
+function! rebuff#mappings#openCurrentBufferIn(cmd, count) abort
   call rebuff#mappings#restoreOriginalBuffer()
   let num = empty(a:count) ? rebuff#getBufferFromLine().num : a:count
   call rebuff#wrapQ()
@@ -231,7 +231,7 @@ endfunction
 
 let s:sort_methods = ['mru', 'num', 'name', 'extension', 'project']
 
-function! rebuff#mappings#toggleSort()
+function! rebuff#mappings#toggleSort() abort
   let nxt = index(s:sort_methods, b:current_sort) + 1
   if nxt == len(s:sort_methods)
     let b:current_sort = s:sort_methods[0]
@@ -242,7 +242,7 @@ function! rebuff#mappings#toggleSort()
   call rebuff#render()
 endfunction
 
-function! rebuff#mappings#include(included)
+function! rebuff#mappings#include(included) abort
   let buf = rebuff#getBufferFromLine()
   let buf.include = 1
   let index = index(a:included, buf.num)
@@ -257,7 +257,7 @@ function! rebuff#mappings#include(included)
   call rebuff#render()
 endfunction
 
-function! rebuff#mappings#jumpTo(char)
+function! rebuff#mappings#jumpTo(char) abort
   call search(a:char)
   normal! 0
   call rebuff#preview()

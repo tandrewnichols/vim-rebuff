@@ -77,7 +77,7 @@ let s:help_legend = [
   \ ['y',            'Copy path of buffer under cursor.']
   \]
 
-function! rebuff#open()
+function! rebuff#open() abort
   call rum#suspend()
 
   let originBuffer = bufnr("%")
@@ -123,7 +123,7 @@ function! rebuff#open()
   call rebuff#highlight()
 endfunction
 
-function! rebuff#getBufferList()
+function! rebuff#getBufferList() abort
   redir => bufoutput
 
   " Show all buffers including the unlisted ones.
@@ -134,7 +134,7 @@ function! rebuff#getBufferList()
   return split(bufoutput, '\n')
 endfunction
 
-function! rebuff#parseBufferList(bufs)
+function! rebuff#parseBufferList(bufs) abort
   let returnList = []
 
   for str in a:bufs
@@ -152,7 +152,7 @@ function! rebuff#parseBufferList(bufs)
   return returnList
 endfunction
 
-function! rebuff#getRoot(name)
+function! rebuff#getRoot(name) abort
   if !g:rebuff.relative_to_project
     return ''
   endif
@@ -172,7 +172,7 @@ function! rebuff#getRoot(name)
   endtry
 endfunction
 
-function! rebuff#checkFilename(entry)
+function! rebuff#checkFilename(entry) abort
   let entry = a:entry
   let root = rebuff#getRoot(entry.name)
   let name = entry.name
@@ -214,7 +214,7 @@ function! rebuff#checkFilename(entry)
   let entry.filename_length = len(entry.name)
 endfunction
 
-function! rebuff#relativeTo(name, where)
+function! rebuff#relativeTo(name, where) abort
   let head = fnamemodify(getcwd(), ":h")
   let partial = substitute(head, '.*' . a:where, '', '')
   let base = '..' . split(a:name, a:where)[1]
@@ -236,7 +236,7 @@ let s:flags = {
   \  'error': 'x'
   \}
 
-function! rebuff#checkFlags(entry)
+function! rebuff#checkFlags(entry) abort
   let entry = a:entry
   let flags = entry.flags
 
@@ -254,7 +254,7 @@ function! rebuff#checkFlags(entry)
   let entry.flag_length = len(flags)
 endfunction
 
-function! rebuff#createAugroup()
+function! rebuff#createAugroup() abort
   augroup RebuffEnter
     autocmd!
     autocmd BufEnter \[Rebuff\] call rebuff#setTimeout()
@@ -265,7 +265,7 @@ function! rebuff#createAugroup()
   augroup END
 endfunction
 
-function! rebuff#setBufferFlags()
+function! rebuff#setBufferFlags() abort
   let b:current_sort = 'mru'
   let b:current_filter = ''
   let b:toggles = exists('s:toggles') ? s:toggles : {
@@ -290,7 +290,7 @@ function! rebuff#setBufferFlags()
   let b:matched_filter = ''
 endfunction
 
-function! rebuff#configureBuffer()
+function! rebuff#configureBuffer() abort
   setlocal nonumber
   setlocal foldcolumn=0
   setlocal nofoldenable
@@ -303,7 +303,7 @@ function! rebuff#configureBuffer()
   setlocal nowrap
 endfunction
 
-function! s:Plug(name, cmd)
+function! s:Plug(name, cmd) abort
   exec "nnoremap <Plug>Rebuff" . a:name  a:cmd . "\<CR>"
 endfunction
 
@@ -346,7 +346,7 @@ call s:Plug('WipeoutBuffer', ":call rebuff#mappings#bufferAction('bw')")
 call s:Plug('ToggleTop', ":call rebuff#mappings#toggle('top_content')")
 call s:Plug('CopyPath', ":call rebuff#mappings#copyPath()")
 
-function! rebuff#map(key, plug)
+function! rebuff#map(key, plug) abort
   let prefix = "<Plug>Rebuff"
   let plug = match(a:plug, prefix) > -1 ? a:plug : prefix . a:plug
   if !hasmapto(plug)
@@ -354,7 +354,7 @@ function! rebuff#map(key, plug)
   endif
 endfunction
 
-function! rebuff#setMappings()
+function! rebuff#setMappings() abort
   call rebuff#map('?', 'ToggleHelpText')
   call rebuff#map("\<CR>", 'Select')
   call rebuff#map("\<Esc>", 'Escape')
@@ -395,7 +395,7 @@ function! rebuff#setMappings()
   call rebuff#map("\<Up>", 'MoveUpAlt')
 endfunction
 
-function! rebuff#remap(...)
+function! rebuff#remap(...) abort
   let s:remap_args = a:000
   augroup RemapRebuff
     au!
@@ -403,15 +403,15 @@ function! rebuff#remap(...)
   augroup END
 endfunction
 
-function! rebuff#pins()
+function! rebuff#pins() abort
   return s:pinned
 endfunction
 
-function! rebuff#included()
+function! rebuff#included() abort
   return s:included
 endfunction
 
-function! rebuff#onExit()
+function! rebuff#onExit() abort
   if !empty(g:rebuff.preserve_toggles)
     let s:toggles = copy(b:toggles)
   endif
@@ -419,20 +419,20 @@ function! rebuff#onExit()
   call rebuff#resetTimeout()
 endfunction
 
-function! rebuff#resetTimeout()
+function! rebuff#resetTimeout() abort
   if !empty(g:rebuff.reset_timeout)
     let &timeoutlen = s:prev_timeout
   endif
 endfunction
 
-function! rebuff#setTimeout()
+function! rebuff#setTimeout() abort
   if !empty(g:rebuff.reset_timeout)
     let s:prev_timeout = &timeoutlen
     let &timeoutlen = 0
  endif
 endfunction
 
-function! rebuff#preview()
+function! rebuff#preview() abort
   if !empty(g:rebuff.preview)
     let buf = rebuff#getBufferFromLine()
     if !empty(buf)
@@ -441,7 +441,7 @@ function! rebuff#preview()
   endif
 endfunction
 
-function! rebuff#getBufferFromLine()
+function! rebuff#getBufferFromLine() abort
   let line = getline('.')
   if !empty(line) && line =~ '^[ +]\+\d\+ [u%#ah=RF?x+ -]\+ .\+$'
     let num = rebuff#extractBufNum(line)
@@ -449,7 +449,7 @@ function! rebuff#getBufferFromLine()
   endif
 endfunction
 
-function! rebuff#findBuffer(key, val)
+function! rebuff#findBuffer(key, val) abort
   for b in b:buffer_objects
     if b[ a:key ] == a:val
       return b
@@ -457,7 +457,7 @@ function! rebuff#findBuffer(key, val)
   endfor
 endfunction
 
-function! rebuff#openInOtherSplit(num)
+function! rebuff#openInOtherSplit(num) abort
   wincmd p
   exec "b" a:num
   normal! ze
@@ -470,7 +470,7 @@ let s:filters = {
   \ 'help_entries': '!v:val.help',
   \}
 
-function! rebuff#filter()
+function! rebuff#filter() abort
   let list = copy(b:buffer_objects)
   let predicate = ['!v:val.pinned']
 
@@ -503,7 +503,7 @@ function! rebuff#filter()
   return filter(list, 'v:val.include || (' . join(predicate, ' && ') . ')')
 endfunction
 
-function! rebuff#render(...)
+function! rebuff#render(...) abort
   " Save off the current cursor position
   let currentBuffer = rebuff#getBufferFromLine()
 
@@ -542,7 +542,7 @@ function! rebuff#render(...)
   call rebuff#preview()
 endfunction
 
-function! rebuff#getPins()
+function! rebuff#getPins() abort
   let pinned = filter(copy(b:buffer_objects), 'v:val.pinned')
   if len(pinned)
     let pinned = g:_.sortBy(pinned, 'pinned')
@@ -551,7 +551,7 @@ function! rebuff#getPins()
   endif
 endfunction
 
-function! rebuff#renderLines(pins)
+function! rebuff#renderLines(pins) abort
   let list = rebuff#filter()
   if len(list)
     if b:current_sort == 'mru'
@@ -584,7 +584,7 @@ function! rebuff#renderLines(pins)
   endif
 endfunction
 
-function! rebuff#renderPins(pins)
+function! rebuff#renderPins(pins) abort
   let start = b:buffer_range[0]
   for pin in a:pins
     exec "sign place" start "line=" . start "name=rebuff_pin file=" . expand("%:p")
@@ -592,7 +592,7 @@ function! rebuff#renderPins(pins)
   endfor
 endfunction
 
-function! rebuff#renderIncludes()
+function! rebuff#renderIncludes() abort
   let pos = getpos('.')
   for include in s:included
     call search('^[ +]*' . include, 'sw')
@@ -603,13 +603,13 @@ function! rebuff#renderIncludes()
   call setpos('.', pos)
 endfunction
 
-function! rebuff#setBufferRange(lines)
+function! rebuff#setBufferRange(lines) abort
   let start = b:toggles.top_content ? len(b:logo) + 3 : 3
   let end = start + len(a:lines)
   let b:buffer_range = [start, end]
 endfunction
 
-function! rebuff#setCursorPosition(currentBuffer)
+function! rebuff#setCursorPosition(currentBuffer) abort
   " Try to position onto the same buffer as before
   if empty(a:currentBuffer) || !search('^[ +]*' . string(a:currentBuffer.num))
     " If that fails, position on the current buffer
@@ -624,7 +624,7 @@ function! rebuff#setCursorPosition(currentBuffer)
   normal! 0
 endfunction
 
-function! s:ConstructEntry(i, entry)
+function! s:ConstructEntry(i, entry) abort
   let entry = a:entry
   let line = '  '
   let line .= entry.modified ? '+ ' : '  '
@@ -636,7 +636,7 @@ function! s:ConstructEntry(i, entry)
   return line
 endfunction
 
-function! rebuff#highlight()
+function! rebuff#highlight() abort
   if has("syntax")
     " Top content definitions
     syn match rebuffBorder     "^-\+$"
@@ -677,19 +677,19 @@ function! rebuff#highlight()
   endif
 endfunction
 
-function! rebuff#extractFilename(entry)
+function! rebuff#extractFilename(entry) abort
   return matchstr(a:entry, '^ *\d\+[^"]\+"\zs[^"]\+\ze"')
 endfunction
 
-function! rebuff#extractFlags(entry)
+function! rebuff#extractFlags(entry) abort
   return matchstr(a:entry, '^ *\d\+\zs[^"]\+\ze"')
 endfunction
 
-function! rebuff#extractBufNum(entry)
+function! rebuff#extractBufNum(entry) abort
   return matchstr(a:entry, '^[ +]*\zs\d\+\ze')
 endfunction
 
-function! rebuff#getSize()
+function! rebuff#getSize() abort
   let size = g:rebuff.window_size
   if len(s:pinned) || len(s:included)
     let size -= 2
@@ -698,7 +698,7 @@ function! rebuff#getSize()
   return size
 endfunction
 
-function! rebuff#buildLogo()
+function! rebuff#buildLogo() abort
   let size = rebuff#getSize()
 
   let isEven = fmod(size, 2) == 0.0
@@ -716,7 +716,7 @@ function! rebuff#buildLogo()
   let b:logo = lines
 endfunction
 
-function! rebuff#buildHelp()
+function! rebuff#buildHelp() abort
   let size = rebuff#getSize()
 
   let isEven = fmod(size, 2) == 0.0
@@ -751,7 +751,7 @@ function! rebuff#buildHelp()
   let b:help_text = lines
 endfunction
 
-function! rebuff#buildInfoLine()
+function! rebuff#buildInfoLine() abort
   let size = rebuff#getSize() - 1
   let line = [
     \ 'Dirs: ' . b:toggles.directories,
@@ -765,11 +765,11 @@ function! rebuff#buildInfoLine()
   return g:_.padStart(join(line, ' '), size)
 endfunction
 
-function! rebuff#sortByMRU(list)
+function! rebuff#sortByMRU(list) abort
   let list = copy(a:list)
   let mru = rum#get()
 
-  function! s:MRUIteree(memo, item, ...) closure
+  function! s:MRUIteree(memo, item, ...) closure abort
     let memo = a:memo
     let match = g:_.find(list, { 'num': a:item.num })
     if type(match) == 4
