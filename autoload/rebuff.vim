@@ -624,7 +624,7 @@ function! s:ConstructEntry(i, entry) abort
   let entry = a:entry
   let line = '  '
   let line .= entry.modified ? '+ ' : '  '
-  let line .= g:_.padStart(entry.num, 3)
+  let line .= g:_.padStart(entry.num, 4)
   let line .= ' '
   let line .= g:_.padStart(entry.flags, 5)
   let line .= ' '
