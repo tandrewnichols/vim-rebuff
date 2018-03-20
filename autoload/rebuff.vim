@@ -1,7 +1,3 @@
-if exists("g:autoloaded_rebuff") | finish | endif
-
-let g:autoloaded_rebuff = 1
-
 let g:rebuff = extend(g:rebuff, {
   \  'show_unlisted': 0,
   \  'show_directories': 0,
