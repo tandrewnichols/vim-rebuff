@@ -24,6 +24,7 @@ let g:rebuff.VERSION = '0.0.1'
 
 
 hi RebuffAccent cterm=bold ctermbg=none ctermfg=red
+hi RebuffPreview cterm=bold ctermbg=none ctermfg=215
 sign define rebuff_pin text=📌
 sign define rebuff_eye text=👁️
 let s:pinned = []
@@ -47,14 +48,24 @@ let s:help_legend = [
   \ ['#',            'Open alternate buffer.'],
   \ ['}',            'Jump to bottom of list.'],
   \ ['{',            'Jump to top of list.'],
-  \ ['d',            'Toggle whether directories are shown.'],
+  \ ['^',            'In preview mode, start of line.'],
+  \ ['$',            'In preview mode, end of line.'],
+  \ ['b',            'In preview mode, scroll the previewed buffer backward.'],
+  \ ['B',            'Toggle on preview mode.'],
+  \ ['d',            'In preview mode, page down. Otherwise, toggle whether directories are shown.'],
   \ ['e',            'Sort by file extension.'],
-  \ ['f',            'Sort by filename.'],
-  \ ['h',            'Toggle whether hidden buffers are shown.'],
+  \ ['f',            'In preview mode, forward. Otherwise, sort by filename.'],
+  \ ['g',            'In preview mode, jump to the top of the previewed buffer.'],
+  \ ['G',            'In preview mode, jump to the bottom of the previewed buffer.'],
+  \ ['h',            'In preview mode, scroll left. Otherwise, toggle whether hidden buffers are shown.'],
   \ ['H',            'Toggle help entries.'],
   \ ['i',            'Include this file in results, even if it normally wouldn''t be'],
-  \ ['j | <Down>',   'Preview next buffer.'],
-  \ ['k | <Up>',     'Preview previous buffer.'],
+  \ ['j',            'In preview mode, scroll down. Otherwise, preview next buffer.'],
+  \ ['<Down>',       'Preview next buffer.'],
+  \ ['k',            'In preview mode, scroll up. Otherwise, preview previous buffer.'],
+  \ ['<Up>',         'Preview previous buffer.'],
+  \ ['l',            'In preview mode, scroll right.'],
+  \ ['K',            'Scroll the previewed buffer up.'],
   \ ['M',            'Sort by MRU.'],
   \ ['n',            'Sort by buffer number.'],
   \ ['p',            'Pin entry to top.'],
@@ -66,7 +77,7 @@ let s:help_legend = [
   \ ['S',            'Toggle sort method.'],
   \ ['t',            'Open buffer under cursor in new tab.'],
   \ ['T',            'Open buffer under cursor in background tab.'],
-  \ ['u',            'Toggle whether unlisted buffers are shown.'],
+  \ ['u',            'In preview mode, page up. Otherwise, toggle whether unlisted buffers are shown.'],
   \ ['v',            'Open buffer under cursor in vertical split.'],
   \ ['w',            'Wipeout buffer under cursor.'],
   \ ['x',            'Toggle top content.'],
@@ -271,6 +282,7 @@ function! rebuff#setBufferFlags() abort
     \  'unlisted': g:rebuff.show_unlisted,
     \  'directories': g:rebuff.show_directories,
     \  'hidden': g:rebuff.show_hidden,
+    \  'preview_mode': 0,
     \  'in_project': 0,
     \  'modified_only': 0,
     \  'reverse': 0
@@ -315,13 +327,25 @@ call s:Plug('JumpToCurrent', ":call rebuff#mappings#jumpTo('%')")
 call s:Plug('JumpToAlternate', ":call rebuff#mappings#jumpTo('#')")
 call s:Plug('JumpToBottom', ":call rebuff#mappings#jumpToLine(b:buffer_range[1])")
 call s:Plug('JumpToTop', ":call rebuff#mappings#jumpToLine(b:buffer_range[0])")
+call s:Plug('PreviewStart', ":call rebuff#mappings#runInPreview('^', 0)")
+call s:Plug('PreviewEnd', ":call rebuff#mappings#runInPreview('$', 0)")
+call s:Plug('PreviewBackward', ":call rebuff#mappings#runInPreview('C-b', 0)")
+call s:Plug('BufferPreviewMode', ":call rebuff#mappings#toggle('preview_mode')")
 call s:Plug('ToggleDirectories', ":call rebuff#mappings#toggle('directories')")
+call s:Plug('PreviewPageDown', ":call rebuff#mappings#runInPreview('C-d', 0)")
 call s:Plug('SortByExtension', ":call rebuff#mappings#setSortTo('extension')")
 call s:Plug('SortByFilename', ":call rebuff#mappings#setSortTo('name')")
+call s:Plug('PreviewForward', ":call rebuff#mappings#runInPreview('C-f', 0)")
+call s:Plug('PreviewToTop', ":call rebuff#mappings#runInPreview('gg', 0)")
+call s:Plug('PreviewToBottom', ":call rebuff#mappings#runInPreview('G', 0)")
 call s:Plug('ToggleHidden', ":call rebuff#mappings#toggle('hidden')")
+call s:Plug('PreviewLeft', ":\<C-u>call rebuff#mappings#runInPreview('h', v:count ? v:count : 1)")
 call s:Plug('Include', ":call rebuff#mappings#include(rebuff#included())")
 call s:Plug('MoveDown', ":\<C-u>call rebuff#mappings#moveTo('j', v:count)")
+call s:Plug('PreviewDown', ":\<C-u>call rebuff#mappings#runInPreview('j', v:count ? v:count : 1)")
 call s:Plug('MoveUp', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
+call s:Plug('PreviewUp', ":\<C-u>call rebuff#mappings#runInPreview('k', v:count ? v:count : 1)")
+call s:Plug('PreviewRight', ":\<C-u>call rebuff#mappings#runInPreview('l', v:count ? v:count : 1)")
 call s:Plug('SortByMRU', "call rebuff#mappings#setSortTo('mru')")
 call s:Plug('MoveDownAlt', ":\<C-u>call rebuff#mappings#moveTo('j', v:count)")
 call s:Plug('MoveUpAlt', ":\<C-u>call rebuff#mappings#moveTo('k', v:count)")
@@ -337,6 +361,7 @@ call s:Plug('ToggleSort', ":call rebuff#mappings#toggleSort()")
 call s:Plug('OpenInTab', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferInTab(v:count)', v:count)")
 call s:Plug('OpenInBackgroundTab', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferInTab(v:count, ''background'')', v:count)")
 call s:Plug('ToggleUnlisted', ":call rebuff#mappings#toggle('unlisted')")
+call s:Plug('PreviewPageUp', ":call rebuff#mappings#runInPreview('C-u', 0)")
 call s:Plug('VerticalSplit', ":\<C-u>call rebuff#mappings#wrapSelect('openCurrentBufferIn(''vsplit'', v:count)', v:count)")
 call s:Plug('WipeoutBuffer', ":call rebuff#mappings#bufferAction('bw')")
 call s:Plug('ToggleTop', ":call rebuff#mappings#toggle('top_content')")
@@ -344,51 +369,82 @@ call s:Plug('CopyPath', ":call rebuff#mappings#copyPath()")
 
 function! rebuff#map(key, plug) abort
   let prefix = "<Plug>Rebuff"
-  let plug = match(a:plug, prefix) > -1 ? a:plug : prefix . a:plug
+  let plug = prefix . a:plug
   if !hasmapto(plug)
     exec "nmap <buffer> <silent> <nowait>" a:key plug
   endif
 endfunction
 
+function! rebuff#expr(key, expr, plug1, plug2) abort
+  let prefix = "<Plug>Rebuff"
+  let plug1 = prefix . a:plug1
+  let plug2 = prefix . a:plug2
+
+  if hasmapto(plug1)
+    let plug1 = "':normal! " . a:key . "<CR>'"
+  else
+    let plug1 = "'" . plug1 . "'"
+  endif
+
+  if empty(a:plug2) || hasmapto(plug2)
+    let plug2 = "':normal! " . a:key . "<CR>'"
+  else
+    let plug2 = "'" . plug2 . "'"
+  endif
+
+  exec "nmap <buffer> <silent> <nowait> <expr>" a:key a:expr "?" plug1 ":" plug2
+endfunction
+
 function! rebuff#setMappings() abort
-  call rebuff#map('?', 'ToggleHelpText')
-  call rebuff#map("\<CR>", 'Select')
-  call rebuff#map("\<Esc>", 'Escape')
-  call rebuff#map('-', 'DeleteBuffer')
-  call rebuff#map('+', 'ToggleModified')
-  call rebuff#map('.', 'FilterByExtension')
-  call rebuff#map('/', 'FilterByText')
-  call rebuff#map('~', 'ToggleInProject')
-  call rebuff#map('%', 'JumpToCurrent')
-  call rebuff#map('#', 'JumpToAlternate')
-  call rebuff#map('}', 'JumpToBottom')
-  call rebuff#map('{', 'JumpToTop')
-  call rebuff#map('d', 'ToggleDirectories')
-  call rebuff#map('e', 'SortByExtension')
-  call rebuff#map('f', 'SortByFilename')
-  call rebuff#map('h', 'ToggleHidden')
-  call rebuff#map('H', 'ToggleHelpEntries')
-  call rebuff#map('i', 'Include')
-  call rebuff#map('j', 'MoveDown')
-  call rebuff#map('k', 'MoveUp')
-  call rebuff#map('M', 'SortByMRU')
-  call rebuff#map('n', 'SortByBufferNumber')
-  call rebuff#map('p', 'Pin')
-  call rebuff#map('P', 'SortByProject')
-  call rebuff#map('q', 'RestoreOriginal')
-  call rebuff#map('r', 'Reset')
-  call rebuff#map('R', 'Reverse')
-  call rebuff#map('s', 'HorizontalSplit')
-  call rebuff#map('S', 'ToggleSort')
-  call rebuff#map('t', 'OpenInTab')
-  call rebuff#map('T', 'OpenInBackgroundTab')
-  call rebuff#map('u', 'ToggleUnlisted')
-  call rebuff#map('v', 'VerticalSplit')
-  call rebuff#map('w', 'WipeoutBuffer')
-  call rebuff#map('x', 'ToggleTop')
-  call rebuff#map('y', 'CopyPath')
-  call rebuff#map("\<Down>", 'MoveDownAlt')
-  call rebuff#map("\<Up>", 'MoveUpAlt')
+  if !get(b:, 'rebuff_mappings_created', 0)
+    call rebuff#map('?', 'ToggleHelpText')
+    call rebuff#map("\<CR>", 'Select')
+    call rebuff#map("\<Esc>", 'Escape')
+    call rebuff#map('-', 'DeleteBuffer')
+    call rebuff#map('+', 'ToggleModified')
+    call rebuff#map('.', 'FilterByExtension')
+    call rebuff#map('/', 'FilterByText')
+    call rebuff#map('~', 'ToggleInProject')
+    call rebuff#map('%', 'JumpToCurrent')
+    call rebuff#map('#', 'JumpToAlternate')
+    call rebuff#map('}', 'JumpToBottom')
+    call rebuff#map('{', 'JumpToTop')
+    call rebuff#expr('^', 'b:toggles.preview_mode', 'PreviewStart', '')
+    call rebuff#expr('$', 'b:toggles.preview_mode', 'PreviewEnd', '')
+    call rebuff#expr('b', 'b:toggles.preview_mode', 'PreviewBackward', '')
+    call rebuff#map('B', 'BufferPreviewMode')
+    call rebuff#expr('d', 'b:toggles.preview_mode', 'PreviewPageDown', 'ToggleDirectories')
+    call rebuff#map('e', 'SortByExtension')
+    call rebuff#expr('f', 'b:toggles.preview_mode', 'PreviewForward', 'SortByFilename')
+    call rebuff#expr('g', 'b:toggles.preview_mode', 'PreviewToTop', '')
+    call rebuff#expr('G', 'b:toggles.preview_mode', 'PreviewToBottom', '')
+    call rebuff#expr('h', 'b:toggles.preview_mode', 'PreviewLeft', 'ToggleHidden')
+    call rebuff#map('H', 'ToggleHelpEntries')
+    call rebuff#map('i', 'Include')
+    call rebuff#expr('j', 'b:toggles.preview_mode', 'PreviewDown', 'MoveDown')
+    call rebuff#expr('k', 'b:toggles.preview_mode', 'PreviewUp', 'MoveUp')
+    call rebuff#expr('l', 'b:toggles.preview_mode', 'PreviewRight', '')
+    call rebuff#map('M', 'SortByMRU')
+    call rebuff#map('n', 'SortByBufferNumber')
+    call rebuff#map('p', 'Pin')
+    call rebuff#map('P', 'SortByProject')
+    call rebuff#map('q', 'RestoreOriginal')
+    call rebuff#map('r', 'Reset')
+    call rebuff#map('R', 'Reverse')
+    call rebuff#map('s', 'HorizontalSplit')
+    call rebuff#map('S', 'ToggleSort')
+    call rebuff#map('t', 'OpenInTab')
+    call rebuff#map('T', 'OpenInBackgroundTab')
+    call rebuff#expr('u', 'b:toggles.preview_mode', 'PreviewPageUp', 'ToggleUnlisted')
+    call rebuff#map('v', 'VerticalSplit')
+    call rebuff#map('w', 'WipeoutBuffer')
+    call rebuff#map('x', 'ToggleTop')
+    call rebuff#map('y', 'CopyPath')
+    call rebuff#map("\<Down>", 'MoveDownAlt')
+    call rebuff#map("\<Up>", 'MoveUpAlt')
+  endif
+
+  let b:rebuff_mappings_created = 1
 endfunction
 
 function! rebuff#remap(...) abort
@@ -516,6 +572,7 @@ function! rebuff#render(...) abort
   call append('$', [rebuff#buildInfoLine(), '', ''])
   let s:sort_match = matchadd('RebuffAccent', 'Sort: \zs[a-z]\+\ze')
   let s:toggled_on_match = matchadd('RebuffAccent', ': \zs1\ze')
+  let s:preview_mode_match = matchadd('RebuffPreview', '^\zsPreview\ze')
 
   let pins = rebuff#getPins()
   call rebuff#renderLines(pins)
@@ -758,7 +815,9 @@ function! rebuff#buildInfoLine() abort
     \ 'Proj: ' . b:toggles.in_project,
     \ 'Sort: ' . b:current_sort
     \]
-  return g:_.padStart(join(line, ' '), size)
+  let prefix = b:toggles.preview_mode ? 'Preview' : ''
+  let padding = b:toggles.preview_mode ? size - 7 : size
+  return prefix . g:_.padStart(join(line, ' '), padding)
 endfunction
 
 function! rebuff#sortByMRU(list) abort

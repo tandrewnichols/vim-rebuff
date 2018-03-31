@@ -72,6 +72,8 @@ Same as above. Provided for symmetry with the `:ls` command.
 
 All of these mappings are associated with `<Plug>`s, so you can remap any of them that you'd like. Additionally, the Rebuff filetype is `rebuff`, so you can add your own buffer specific mappings with a Filetype autocommand.
 
+It bears explaining "Buffer Preview Mode" first. Some mappings serve multiple purposes depending on the current mode. Buffer Preview Mode can be activated by pressing `B` (an indicator will appear above the buffer list). When this mode is active, some keys will perform actions on the buffer being previewed, along you to scroll around and jump in that buffer without leaving the Rebuff buffer.
+
 | Mapping | Plug | Description |
 | ------- | ---- | ----------- |
 | `<leader>ls` | `<Plug>RebuffOpen` | Open the Rebuff buffer. This is the only global mapping. |
@@ -87,14 +89,21 @@ All of these mappings are associated with `<Plug>`s, so you can remap any of the
 | `#` | `<Plug>RebuffJumpToAlternate` | Jump to the alternate file and select it. |
 | `}` | `<Plug>RebuffJumpToBottom` | Jump to the bottom of the buffer list. |
 | `{` | `<Plug>RebuffJumpToTop` | Jump to the top of the buffer list. |
-| `d` | `<Plug>RebuffToggleDirectories` | Toggle whether directories are shown. |
+| `^` | `<Plug>RebuffPreviewStart` | In preview mode, go to the start of the line. |
+| `$` | `<Plug>RebuffPreviewEnd` | In preview mode, go to the end of the line. |
+| `b` | `<Plug>RebuffPreviewBackward` | In preview mode, scroll backward (i.e. `<C-b>`). |
+| `B` | `<Plug>RebuffBufferPreviewMode` | Toggle preview mode. |
+| `d` | `<Plug>RebuffPreviewPageDown`<br>`<Plug>RebuffToggleDirectories` | In preview mode, scroll the page down (i.e. `<C-d>`). Otherwise, toggle whether directories are shown. |
 | `e` | `<Plug>RebuffSortByExtension` | Sort the buffer list by extension. |
-| `f` | `<Plug>RebuffSortByFilename` | Sort the buffer list by file name. |
-| `h` | `<Plug>RebuffToggleHidden` | Toggle whether hidden buffers are shown. |
+| `f` | `<Plug>RebuffPreviewForward`<br>`<Plug>RebuffSortByFilename` | In preview mode, scroll forward (i.e. `<C-f>`). Otherwise, sort the buffer list by file name. |
+| `g` | `<Plug>RebuffPreviewToTop` | In preview mode, jump to the top of the previewed buffer. |
+| `G` | `<Plug>RebuffPreviewToBottom` | In preview mode, jump to the bottom of the previewed buffer. |
+| `h` | `<Plug>RebuffPreviewLeft`<br>`<Plug>RebuffToggleHidden` | In preview mode, scroll left. Note that this isn't always detectable, unless the window itself scrolls. Otherwise, toggle whether hidden buffers are shown. |
 | `H` | `<Plug>RebuffToggleHelpEntries` | Toggle whether help entries are shown. |
 | `i` | `<Plug>RebuffInclude` | Always include this buffer in the buffer list, even if it's a type that would not normally be shown. |
-| `j` | `<Plug>RebuffMoveDown` | Move down a line and preview the next buffer. |
-| `k` | `<Plug>RebuffMoveUp` | Move up a line and preview the previous buffer. |
+| `j` | `<Plug>RebuffPreviewDown`<br>`<Plug>RebuffMoveDown` | In preview mode, scroll down. Otherwise, move down a line and preview the next buffer. |
+| `k` | `<Plug>RebuffPreviewUp`<br>`<Plug>RebuffMoveUp` | In preview mode, scroll up. Otherwise, move up a line and preview the previous buffer. |
+| `l` | `<Plug>RebuffPreviewRight` | In preview mode, scroll right. |
 | `M` | `<Plug>RebuffSortByMRU` | Sort the buffer list by most recent used buffer. |
 | `n` | `<Plug>RebuffSortByBufferNumber` | Sort the buffer list by buffer number. |
 | `p` | `<Plug>RebuffPin` | Pin this file to the type, regardless of sort order. |
@@ -106,7 +115,7 @@ All of these mappings are associated with `<Plug>`s, so you can remap any of the
 | `S` | `<Plug>RebuffToggleSort` | Cycle through sort methods (mru, number, file name, extension, project root) |
 | `<count>t` | `<Plug>RebuffOpenInTab` | Without a count, activate the buffer under the cursor in a new tab. With a count, jump to buffer number `<count>` and either preview it or activate it in a new tab (depending on the value of `g:rebuff.open_with_count`). |
 | `<count>T` | `<Plug>RebuffOpenInBackgroundTab` | Without a count, activate the buffer under the cursor in a new tab, but keep the original buffer focused. With a count, jump to buffer number `<count>` and either preview it or activate it in a background tab (depending on the value of `g:rebuff.open_with_count`). |
-| `u` | `<Plug>RebuffToggleUnlisted` | Toggle whether unlisted buffers are shown. |
+| `u` | `<Plug>RebuffPreviewPageUp`<br>`<Plug>RebuffToggleUnlisted` | In preview mode, scroll the page up (i.e. `<C-u>`). Otherwise, toggle whether unlisted buffers are shown. |
 | `<count>v` | `<Plug>RebuffVerticalSplit` | Without a count, activate the buffer under the cursor in a vertical split with the original buffer. With a count, jump to buffer number `<count>` and either preview it or activate it in a horizontal split (depending on the value of `g:rebuff.open_with_count`). |
 | `w` | `<Plug>RebuffWipeoutBuffer` | Wipeout the buffer under the cursor. (i.e. `:bwipeout`) |
 | `x` | `<Plug>RebuffToggleTop` | Toggle whether top content is shown. |

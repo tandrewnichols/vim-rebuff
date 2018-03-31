@@ -195,17 +195,48 @@ See |rebuff-plugs| if you want to override any of these mappings.
                                    *rebuff-{*
  {            Jump to the top of the buffer list.
 
+                                   *rebuff-^*
+ ^            In preview mode, move the previewed buffer to the start of the
+              current line.
+
+                                   *rebuff-$*
+ $            In preview mode, move the previewed buffer to the end of the
+              current line.
+
+                                   *rebuff-b*
+ b            In preview mode, scroll the previewed buffer backward (same as
+              |<C-b>|).
+
+                                   *rebuff-B* *rebuff-preview-mode*
+ B            Toggle preview mode on or off. When preview mode is on, some
+              keys perform actions on the buffer being previewed, allowing you
+              to scroll around without leaving the rebuff buffer. See
+              |rebuff-^|, |rebuff-$|, |rebuff-b|, |rebuff-d|, |rebuff-f|,
+              |rebuff-g|, |rebuff-G|, |rebuff-h|, |rebuff-j|, |rebuff-k|,
+              |rebuff-l|, and |rebuff-u|. When preview mode is on, an
+              indicator is displayed at the top of the buffer list.
+
                                    *rebuff-d*
- d            Toggle whether directories are shown.
+ d            In preview mode, scroll the previewed buffer one page down (same
+              as |<C-d>|). Otherwise, toggle whether directories are shown.
 
                                    *rebuff-e*
  e            Sort the buffer list by extension.
 
                                    *rebuff-f*
- f            Sort the buffer list by file name.
+ f            In preview mode, scroll the previewed buffer forward (same as
+              |<C-f>|). Otherwise, sort the buffer list by file name.
+
+                                   *rebuff-g*
+ g            In preview mode, jump to the top of the previewed buffer (same
+              as |gg|).
+
+                                   *rebuff-G*
+ G            In preview mode, jump to the bottom of the previewed buffer.
 
                                    *rebuff-h*
- h            Toggle whether hidden buffers are shown.
+ h            In preview mode, scroll the previewed buffer left. Otherwise,
+              toggle whether hidden buffers are shown.
 
                                    *rebuff-H*
  H            Toggle whether help entries are shown.
@@ -215,10 +246,15 @@ See |rebuff-plugs| if you want to override any of these mappings.
               type that would not normally be shown.
 
                                    *rebuff-j*
- j            Move down a line and preview the next buffer.
+ j            In preview mode, scroll the previewed buffer down. Otherwise,
+              move down a line and preview the next buffer.
 
                                    *rebuff-k*
- k            Move up a line and preview the previous buffer.
+ k            In preview mode, scroll the previewed buffer up. Otherwise, move
+              up a line and preview the previous buffer.
+
+                                   *rebuff-l*
+ l            In preview mode, scroll the previewed buffer right.
 
                                    *rebuff-M*
  M            Sort the buffer list by most recent used buffer.
@@ -266,7 +302,8 @@ See |rebuff-plugs| if you want to override any of these mappings.
               g:rebuff.open_with_count).
 
                                    *rebuff-u*
- u            Toggle whether unlisted buffers are shown.
+ u            In preview mode, scroll the previewed buffer one page up (same
+              as |<C-u>|). Otherwise, toggle whether unlisted buffers are shown.
 
                                    *rebuff-v*
  <count>v     Without a <count>, activate the buffer under the cursor in a
@@ -292,7 +329,8 @@ See |rebuff-plugs| if you want to override any of these mappings.
 PLUGS                              *rebuff-plugs*
 
 All of the Rebuff mappings are assigned via plugs, so feel free to customize
-any mapping you want.
+any mapping you want. An asterisk indicates a mapping only defined in preview
+mode.
 
  Default Map   Plug ~
                                    *rebuff-plug-ls*
@@ -334,17 +372,38 @@ any mapping you want.
                                    *rebuff-plug-{*
  {            <Plug>RebuffJumpToTop
 
+                                   *rebuff-plug-^*
+ ^            <Plug>RebuffPreviewStart (*)
+
+                                   *rebuff-plug-$*
+ $            <Plug>RebuffPreviewEnd (*)
+
+                                   *rebuff-plug-b*
+ b            <Plug>RebuffPreviewBackward (*)
+
+                                   *rebuff-plug-B*
+ B            <Plug>RebuffBufferPreviewMode
+
                                    *rebuff-plug-d*
  d            <Plug>RebuffToggleDirectories
+              <Plug>RebuffPreviewPageDown (*)
 
                                    *rebuff-plug-e*
  e            <Plug>RebuffSortByExtension
 
                                    *rebuff-plug-f*
  f            <Plug>RebuffSortByFilename
+              <Plug>RebuffPreviewForward (*)
+
+                                   *rebuff-plug-g*
+ g            <Plug>RebuffPreviewToTop (*)
+
+                                   *rebuff-plug-G*
+ G            <Plug>RebuffPreviewToBottom (*)
 
                                    *rebuff-plug-h*
  h            <Plug>RebuffToggleHidden
+              <Plug>RebuffPreviewLeft (*)
 
                                    *rebuff-plug-H*
  H            <Plug>RebuffToggleHelpEntries
@@ -354,9 +413,14 @@ any mapping you want.
 
                                    *rebuff-plug-j*
  j            <Plug>RebuffMoveDown
+              <Plug>RebuffPreviewDown (*)
 
                                    *rebuff-plug-k*
  k            <Plug>RebuffMoveUp
+              <Plug>RebuffPreviewUp (*)
+
+                                   *rebuff-plug-l*
+ l            <Plug>RebuffPreviewRight (*)
 
                                    *rebuff-plug-M*
  M            <Plug>RebuffSortByMRU
@@ -393,6 +457,7 @@ any mapping you want.
 
                                    *rebuff-plug-u*
  u            <Plug>RebuffToggleUnlisted
+              <Plug>RebuffPreviewPageUp (*)
 
                                    *rebuff-plug-v*
  <count>v     <Plug>RebuffVerticalSplit

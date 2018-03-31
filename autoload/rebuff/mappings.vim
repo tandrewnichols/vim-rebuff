@@ -258,3 +258,22 @@ function! rebuff#mappings#jumpTo(char) abort
   normal! 0
   call rebuff#preview()
 endfunction
+
+let s:char_map = {
+  \   'C-b': "",
+  \   'C-f': "",
+  \   'C-d': "",
+  \   'C-u': ""
+  \ }
+
+function! rebuff#mappings#runInPreview(char, count) abort
+  let char = has_key(s:char_map, a:char) ? s:char_map[ a:char ] : a:char
+
+  wincmd p
+  if a:count
+    exec "normal!" a:count . char
+  else
+    exec "normal!" char
+  endif
+  wincmd p
+endfunction
