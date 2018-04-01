@@ -2,10 +2,6 @@ if exists("g:loaded_rebuff") || &cp | finish | endif
 
 let g:loaded_rebuff = 1
 
-if !exists('g:rebuff')
-  let g:rebuff = {}
-endif
-
 if exists('*rum#ignore')
   call rum#ignore('\[Rebuff\]')
 endif

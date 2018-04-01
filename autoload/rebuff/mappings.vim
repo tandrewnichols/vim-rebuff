@@ -8,7 +8,7 @@ function! rebuff#mappings#wrapSelect(fn, count, ...) abort
 
   if !empty(a:count)
     call rebuff#mappings#findByNumber(a:count)
-    if g:rebuff.open_with_count
+    if g:rebuff_open_with_count
       exec "call rebuff#mappings#" . a:fn
     else
       call rebuff#preview()
@@ -66,7 +66,7 @@ function! rebuff#mappings#filterBy(prop, start) abort
     echo indicator
   endif
 
-  if g:rebuff.incremental_filter
+  if g:rebuff_incremental_filter
     if !exists("b:filter_text")
       let b:filter_text = ''
     endif
@@ -122,7 +122,7 @@ function! rebuff#mappings#tryOpen(char, code) abort
   let numlines = b:buffer_range[1] - b:buffer_range[0]
 
   let b:filter_text = ""
-  if g:rebuff.open_filter_single_file && numlines == 1
+  if g:rebuff_open_filter_single_file && numlines == 1
     if char == "\<CR>"
       call rebuff#mappings#open(0)
     elseif code == 22
@@ -140,7 +140,7 @@ endfunction
 function! rebuff#mappings#copyPath() abort
   let currentBuffer = rebuff#getBufferFromLine()
   let text = currentBuffer.name
-  if g:rebuff.copy_absolute_path
+  if g:rebuff_copy_absolute_path
     let text = fnamemodify(currentBuffer.rawname, ":p")
   endif
 
@@ -163,12 +163,12 @@ function! rebuff#mappings#moveTo(dir, count) abort
   exec "normal!" suffix
 
   " Debounce previewing for faster scrolling
-  if g:rebuff.debounce_preview
+  if g:rebuff_debounce_preview
     if exists("b:preview_timeout")
       call timer_stop(b:preview_timeout)
     endif
 
-    let b:preview_timeout = timer_start(g:rebuff.debounce_preview, function('rebuff#mappings#callPreview'))
+    let b:preview_timeout = timer_start(g:rebuff_debounce_preview, function('rebuff#mappings#callPreview'))
   else
     call rebuff#preview()
   endif

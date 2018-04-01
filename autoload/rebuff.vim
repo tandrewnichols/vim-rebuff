@@ -1,4 +1,8 @@
-let g:rebuff = extend(g:rebuff, {
+function! s:Set(option, default) abort
+  exec "let g:rebuff_" . a:option "= get(g:, 'rebuff_" . a:option . "', a:default)"
+endfunction
+
+for [option, default] in items({
   \  'show_unlisted': 0,
   \  'show_directories': 0,
   \  'show_hidden': 1,
@@ -18,9 +22,11 @@ let g:rebuff = extend(g:rebuff, {
   \  'reset_timeout': 1,
   \  'debounce_preview': 150,
   \  'open_filter_single_file': 1
-  \}, 'keep')
+  \})
+  call s:Set(option, default)
+endfor
 
-let g:rebuff.VERSION = '0.0.1'
+let g:rebuff_VERSION = '0.0.1'
 
 
 hi RebuffAccent cterm=bold ctermbg=none ctermfg=red
@@ -90,23 +96,23 @@ function! rebuff#open() abort
   let originBuffer = bufnr("%")
   silent let rawBufs = rebuff#getBufferList()
 
-  let size = g:rebuff.window_size
+  let size = g:rebuff_window_size
 
   if bufexists('[Rebuff]')
-    let command = !empty(g:rebuff.vertical_split) ? 'vsplit' : 'split'
+    let command = !empty(g:rebuff_vertical_split) ? 'vsplit' : 'split'
   else
-    let command = !empty(g:rebuff.vertical_split) ? 'vnew' : 'new'
+    let command = !empty(g:rebuff_vertical_split) ? 'vnew' : 'new'
   endif
 
   call rebuff#createAugroup()
 
-  if !empty(g:rebuff.window_position)
-    exec g:rebuff.window_position "keepjumps hide" size . command "[Rebuff]"
+  if !empty(g:rebuff_window_position)
+    exec g:rebuff_window_position "keepjumps hide" size . command "[Rebuff]"
   else
     exec "keepjumps hide" size . command "[Rebuff]"
   endif
 
-  if g:rebuff.vertical_split
+  if g:rebuff_vertical_split
     wincmd L
     exec size . "wincmd |"
   else
@@ -122,7 +128,7 @@ function! rebuff#open() abort
 
   call rebuff#setBufferFlags()
 
-  let b:current_sort = g:rebuff.default_sort_order
+  let b:current_sort = g:rebuff_default_sort_order
 
   call rebuff#render()
 
@@ -160,7 +166,7 @@ function! rebuff#parseBufferList(bufs) abort
 endfunction
 
 function! rebuff#getRoot(name) abort
-  if !g:rebuff.relative_to_project
+  if !g:rebuff_relative_to_project
     return ''
   endif
 
@@ -276,12 +282,12 @@ function! rebuff#setBufferFlags() abort
   let b:current_sort = 'mru'
   let b:current_filter = ''
   let b:toggles = exists('s:toggles') ? s:toggles : {
-    \  'help': g:rebuff.show_help,
-    \  'help_entries': g:rebuff.show_help_entries,
-    \  'top_content': g:rebuff.show_top_content,
-    \  'unlisted': g:rebuff.show_unlisted,
-    \  'directories': g:rebuff.show_directories,
-    \  'hidden': g:rebuff.show_hidden,
+    \  'help': g:rebuff_show_help,
+    \  'help_entries': g:rebuff_show_help_entries,
+    \  'top_content': g:rebuff_show_top_content,
+    \  'unlisted': g:rebuff_show_unlisted,
+    \  'directories': g:rebuff_show_directories,
+    \  'hidden': g:rebuff_show_hidden,
     \  'preview_mode': 0,
     \  'in_project': 0,
     \  'modified_only': 0,
@@ -464,7 +470,7 @@ function! rebuff#included() abort
 endfunction
 
 function! rebuff#onExit() abort
-  if !empty(g:rebuff.preserve_toggles)
+  if !empty(g:rebuff_preserve_toggles)
     let s:toggles = copy(b:toggles)
   endif
 
@@ -472,20 +478,20 @@ function! rebuff#onExit() abort
 endfunction
 
 function! rebuff#resetTimeout() abort
-  if !empty(g:rebuff.reset_timeout)
+  if !empty(g:rebuff_reset_timeout)
     let &timeoutlen = s:prev_timeout
   endif
 endfunction
 
 function! rebuff#setTimeout() abort
-  if !empty(g:rebuff.reset_timeout)
+  if !empty(g:rebuff_reset_timeout)
     let s:prev_timeout = &timeoutlen
     let &timeoutlen = 0
  endif
 endfunction
 
 function! rebuff#preview() abort
-  if !empty(g:rebuff.preview)
+  if !empty(g:rebuff_preview)
     let buf = rebuff#getBufferFromLine()
     if !empty(buf)
       call rebuff#openInOtherSplit(buf.num)
@@ -743,7 +749,7 @@ function! rebuff#extractBufNum(entry) abort
 endfunction
 
 function! rebuff#getSize() abort
-  let size = g:rebuff.window_size
+  let size = g:rebuff_window_size
   if len(s:pinned) || len(s:included)
     let size -= 2
   endif

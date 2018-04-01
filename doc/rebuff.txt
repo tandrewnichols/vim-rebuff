@@ -153,7 +153,7 @@ See |rebuff-plugs| if you want to override any of these mappings.
  <count><CR>  Without a <count>, activate the buffer under the cursor. With a
               <count>, jump to buffer number <count> and either preview it or
               activate it (depending on the value of
-              g:|rebuff.open_with_count|).
+              g:|rebuff_open_with_count|).
 
                                    *rebuff-<ESC>*
  <Esc>        Close Rebuff and return to the original buffer.
@@ -166,7 +166,7 @@ See |rebuff-plugs| if you want to override any of these mappings.
 
                                    *rebuff-.*
  .            Filter the buffer list by extension. If you have
-              g:rebuff.open_filter_single_file set to 0, <CR> returns your
+              g:|rebuff_open_filter_single_file| set to 0, <CR> returns your
               cursor to the Rebuff pane. If set to 1 and only one file matches
               your filter, <CR> selects that file.  You can also use <C-v>,
               (vertical split) <C-h>, (horizontal split) <C-t> (tab), or <C-b>
@@ -174,7 +174,7 @@ See |rebuff-plugs| if you want to override any of these mappings.
 
                                    *rebuff-/*
  /            Filter the buffer list by arbitrary text. If you have
-              g:rebuff.open_filter_single_file set to 0, <CR> returns your
+              g:|rebuff_open_filter_single_file| set to 0, <CR> returns your
               cursor to the Rebuff pane. If set to 1 and only one file matches
               your filter, <CR> selects that file.  You can also use <C-v>,
               (vertical split) <C-h>, (horizontal split) <C-t> (tab), or <C-b>
@@ -282,7 +282,7 @@ See |rebuff-plugs| if you want to override any of these mappings.
               horizontal split with the original buffer. With a <count>, jump to
               buffer number <count> and either preview it or activate it in a
               horizontal split (depending on the value of
-              g:rebuff.open_with_count).
+              g:|rebuff_open_with_count|).
 
                                    *rebuff-S*
  S            Cycle through sort methods (mru, number, file name, extension,
@@ -292,14 +292,14 @@ See |rebuff-plugs| if you want to override any of these mappings.
  <count>t     Without a <count>, activate the buffer under the cursor in a new
               tab. With a <count>, jump to buffer number <count> and either
               preview it or activate it in a new tab (depending on the value
-              of g:rebuff.open_with_count).
+              of g:|rebuff_open_with_count|).
 
                                    *rebuff-T*
  <count>T     Without a <count>, activate the buffer under the cursor in a new
               tab, but keep the original buffer focused. With a <count>, jump to
               buffer number <count> and either preview it or activate it in a
               background tab (depending on the value of
-              g:rebuff.open_with_count).
+              g:|rebuff_open_with_count|).
 
                                    *rebuff-u*
  u            In preview mode, scroll the previewed buffer one page up (same
@@ -310,7 +310,7 @@ See |rebuff-plugs| if you want to override any of these mappings.
               vertical split with the original buffer. With a <count>, jump to
               buffer number <count> and either preview it or activate it in a
               horizontal split (depending on the value of
-              g:rebuff.open_with_count).
+              g:|rebuff_open_with_count|).
 
                                    *rebuff-w*
  w            Wipeout the buffer under the cursor. (i.e. :bwipeout)
@@ -479,28 +479,28 @@ mode.
 
 OPTIONS                            *rebuff-options*
 
-                                   *rebuff.show_unlisted*
+                                   *rebuff_show_unlisted*
 Show unlisted buffers in Rebuff buffer list. Toggle this within Rebuff using
 `u`.
 Default: 0
 
-                                   *rebuff.show_directories*
+                                   *rebuff_show_directories*
 Show directories in Rebuff buffer list. Toggle this within Rebuff using `d`.
 Default: 0
 
-                                   *rebuff.show_hidden*
+                                   *rebuff_show_hidden*
 Show hidden buffers in Rebuff buffer list. Toggle this within Rebuff using `h`.
 Default: 1
 
-                                   *rebuff.show_help*
+                                   *rebuff_show_help*
 Show help at the bottom when Rebuff opens. Toggle this within Rebuff using `?`.
 Default: 0
 
-                                   *rebuff.show_top_content*
+                                   *rebuff_show_top_content*
 Show the Rebuff logo at the top. Toggle this within Rebuff using `x`.
 Default: 1
 
-                                   *rebuff.default_sort_order*
+                                   *rebuff_default_sort_order*
 Change the starting sort order. Most recently used is probably preferable most
 of the time, but you can rotate through the various sort methods with `S` or
 set a particular sort method using `e` (extension), `f` (filename), `M` (most
@@ -511,25 +511,25 @@ maybe `project`, which sorts based on the root directory of the project
 repository.
 Default: 'mru'
 
-                                   *rebuff.vertical_split*
+                                   *rebuff_vertical_split*
 Open Rebuff in a vertical split.
 Default: 1
 
-                                   *rebuff.window_size*
+                                   *rebuff_window_size*
 The width of the Rebuff split when vertical. The size is ignored on horizontal
 splits, defaulting to half the window.
 Default: 80
 
-                                   *rebuff.relative_to_project*
+                                   *rebuff_relative_to_project*
 Show buffer names relative to the project root. When set to 0, file names will
 be shown exactly as they appear in `:ls`.
 Default: 1
 
-                                   *rebuff.show_help_entries*
+                                   *rebuff_show_help_entries*
 Show help entries in the Rebuff buffer list.
 Default: 0
 
-                                   *rebuff.open_with_count*
+                                   *rebuff_open_with_count*
 The select buffer mappings (`<CR>`, `v`, `s`, `t`, and `T`) take a count. If
 this option is 1, the buffer number matching count will be automatically opened
 in the right view. If it is 0, the cursor will be positioned on that buffer
@@ -538,42 +538,42 @@ automatically. Which means to open a file by number, you have to type
 `<count><CR><CR>`.
 Default: 1
 
-                                   *rebuff.copy_absolute_path*
+                                   *rebuff_copy_absolute_path*
 When copying the file name of a buffer using `y`, use an absolute path instead
 of a relative one.
 Default: 1
 
-                                   *rebuff.incremental_filter*
+                                   *rebuff_incremental_filter*
 When filtering with `.` or `/` and this options is set to 1, the buffer list
 will be upated on each key stroke. If this option is 0, the filter won't be
 applied until you hit `<CR>`.
 Default: 1
 
-                                   *rebuff.preserve_toggles*
+                                   *rebuff_preserve_toggles*
 Keep any toggles set when Rebuff closes. If this is set to 1, and you toggle
 on, for example, unlisted files, the next time you open Rebuff, unlisted files
 will still be shown.
 Default: 0
 
-                                   *rebuff.window_position*
+                                   *rebuff_window_position*
 Where to position the Rebuff pane. If set to `rightbelow` or `leftabove`, that
 option will be used. Set to 0 to use whatever default you've set in vim.
 Default: 'rightbelow'
 
-                                   *rebuff.preview*
+                                   *rebuff_preview*
 I mean, the whole point of this plugin (in my opinion) is to preview files, but
 if you don't like that behavior (or find it a bit laggy), you can turn it off,
 in which case it works more or less like any other buffer explorer.
 Default: 1
 
-                                   *rebuff.reset_timeout*
+                                   *rebuff_reset_timeout*
 By default, Rebuff changes the `timeoutlen` option to 0 when it opens
 (`timeoutlen` is global, so unfortunately `setlocal` is not possible here), and
 resets it to whatever it was when it closes. That's because it makes previewing
 a bit smoother, but you can tell it to leave your options alone if you like.
 Default: 1
 
-                                   *rebuff.debounce_preview*
+                                   *rebuff_debounce_preview*
 When moving up or down, the previewing functionality is actually debounced via
 timer, so that if you hit `j` or `k` a bunch of times in a row, it scrolls more
 smoothly by skipping the preview. I've found that 150 is a pretty nice balance
@@ -581,7 +581,7 @@ between scrolling quickly but still rendering the preview non-sluggishly, but
 you can set this to some other (millisecond) number if this doesn't suit you.
 Default: 150
 
-                                   *rebuff.open_filter_single_file*
+                                   *rebuff_open_filter_single_file*
 When filtering with `.` or `/`, if only one file matches and this option is set
 to 1, hitting `<CR>` selects that file instead of returning you to the Rebuff
 pane. You can also use If this option is set to 1 and only one file matches,
