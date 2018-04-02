@@ -25,7 +25,7 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
 #### Plug (https://github.com/junegunn/vim-plug)
 1. In your .vimrc or something sourced therein:
   ```
-  Plug 'tandrewnichols/vim-lodash'
+  Plug 'tandrewnichols/vim-vigor'
   Plug 'tandrewnichols/vim-rumrunner'
   Plug 'dbakker/vim-projectroot'
   Plug 'tandrewnichols/vim-rebuff'
@@ -35,7 +35,7 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
 #### Vundle (https://github.com/gmarik/Vundle.vim)
 1. In your .vimrc or something sourced therein:
   ```
-  Plugin 'tandrewnichols/vim-lodash'
+  Plugin 'tandrewnichols/vim-vigor'
   Plugin 'tandrewnichols/vim-rumrunner'
   Plugin 'dbakker/vim-projectroot'
   Plugin 'tandrewnichols/vim-rebuff'
@@ -45,7 +45,7 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
 #### NeoBundle (https://github.com/Shougo/neobundle.vim)
 1. In your .vimrc or something sourced therein:
   ```
-  NeoBundle 'tandrewnichols/vim-lodash'
+  NeoBundle 'tandrewnichols/vim-vigor'
   NeoBundle 'tandrewnichols/vim-rumrunner'
   NeoBundle 'dbakker/vim-projectroot'
   NeoBundle 'tandrewnichols/vim-rebuff'
@@ -53,7 +53,7 @@ If you're the type of person that doesn't use a plugin manager, prefering instea
 2. Install with `:NeoBundleInstall`.
 
 #### Pathogen
-1. git clone https://github.com/tandrewnichols/vim-lodash.git ~/.vim/bundle/vim-lodash
+1. git clone https://github.com/tandrewnichols/vim-vigor.git ~/.vim/bundle/vim-vigor
 2. git clone https://github.com/tandrewnichols/vim-rumrunner.git ~/.vim/bundle/vim-rumrunner
 3. git clone https://github.com/dbakker/vim-projectroot ~/.vim/bundle/vim-projectroot
 4. git clone https://github.com/tandrewnichols/vim-rebuff.git ~/.vim/bundle/vim-rebuff

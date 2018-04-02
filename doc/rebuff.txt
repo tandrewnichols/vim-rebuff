@@ -38,7 +38,7 @@ Rebuff uses timers, which means it requires at least vim 8.0.
 
 DEPENDENCIES                       *rebuff-dependencies*
 
-  1. vim-lodash      <https://github.com/tandrewnichols/vim-lodash>
+  1. vim-vigor       <https://github.com/tandrewnichols/vim-vigor>
   2. vim-rumrunner   <https://github.com/tandrewnichols/vim-rumrunner>
   3. vim-projectroot <https://github.com/dbakker/vim-projectroot>
 
@@ -55,7 +55,7 @@ INSTALLATION                       *rebuff-installation*
 
      Add the following to your vimrc, or something sourced therein: >
 
-     Plug 'tandrewnichols/vim-lodash'
+     Plug 'tandrewnichols/vim-vigor'
      Plug 'tandrewnichols/vim-rumrunner'
      Plug 'dbakker/vim-projectroot'
      Plug 'tandrewnichols/vim-rebuff'
@@ -66,7 +66,7 @@ INSTALLATION                       *rebuff-installation*
 
      Add the following to your vimrc, or something sourced therein: >
 
-     Plugin 'tandrewnichols/vim-lodash'
+     Plugin 'tandrewnichols/vim-vigor'
      Plugin 'tandrewnichols/vim-rumrunner'
      Plugin 'dbakker/vim-projectroot'
      Plugin 'tandrewnichols/vim-rebuff'
@@ -77,7 +77,7 @@ INSTALLATION                       *rebuff-installation*
 
      Add the following to your vimrc, or something sourced therein: >
 
-     NeoBundle 'tandrewnichols/vim-lodash'
+     NeoBundle 'tandrewnichols/vim-vigor'
      NeoBundle 'tandrewnichols/vim-rumrunner'
      NeoBundle 'dbakker/vim-projectroot'
      NeoBundle 'tandrewnichols/vim-rebuff'
@@ -87,7 +87,7 @@ INSTALLATION                       *rebuff-installation*
   5. Pathogen <https://github.com/tpope/vim-pathogen> >
 
      cd ~/.vim/bundle
-     git clone https://github.com/tandrewnichols/vim-lodash.git
+     git clone https://github.com/tandrewnichols/vim-vigor.git
      git clone https://github.com/tandrewnichols/vim-rumrunner.git
      git clone https://github.com/dbakker/vim-projectroot.git
      git clone https://github.com/tandrewnichols/vim-rebuff.git

@@ -14,7 +14,7 @@ function! Rebuff()
   " annoying for users but makes the loading order for these
   " plugins not matter.
   if !exists("g:loaded_lodash")
-    echo 'Rebuff requires vim-lodash. See https://github.com/tandrewnichols/vim-lodash.'
+    echo 'Rebuff requires vim-vigor. See https://github.com/tandrewnichols/vim-vigor.'
   endif
 
   if !exists("g:loaded_rum")
