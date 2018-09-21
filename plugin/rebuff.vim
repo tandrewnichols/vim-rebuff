@@ -13,7 +13,7 @@ function! Rebuff()
   " check until Rebuff is used, which maybe is a little more
   " annoying for users but makes the loading order for these
   " plugins not matter.
-  if !exists("g:loaded_lodash")
+  if !exists("g:loaded_vigor")
     echo 'Rebuff requires vim-vigor. See https://github.com/tandrewnichols/vim-vigor.'
   endif
 
@@ -25,7 +25,7 @@ function! Rebuff()
     echo 'Rebuff requires vim-projectroot. See https://github.com/dbakker/vim-projectroot.'
   endif
 
-  if !exists("g:loaded_lodash") || !exists("g:loaded_rum") || !exists("g:loaded_projectroot")
+  if !exists("g:loaded_vigor") || !exists("g:loaded_rum") || !exists("g:loaded_projectroot")
     return
   endif
 

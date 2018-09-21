@@ -257,7 +257,7 @@ function! rebuff#checkFlags(entry) abort
     let entry[ key ] = match(flags, s:flags[key]) > -1
   endfor
 
-  let found = g:_.find(s:pinned, { 'num': entry.num })
+  let found = vigor#list#find(s:pinned, { 'num': entry.num })
   let entry.pinned = type(found) != 0
 
   let included = index(s:included, entry.num)
@@ -604,8 +604,8 @@ endfunction
 function! rebuff#getPins() abort
   let pinned = filter(copy(b:buffer_objects), 'v:val.pinned')
   if len(pinned)
-    let pinned = g:_.sortBy(pinned, 'pinned')
-    let pinnedLines = g:_.map(pinned, function('s:ConstructEntry'))
+    let pinned = vigor#list#sortBy(pinned, 'pinned')
+    let pinnedLines = vigor#list#map(pinned, function('s:ConstructEntry'))
     return pinnedLines
   endif
 endfunction
@@ -616,10 +616,10 @@ function! rebuff#renderLines(pins) abort
     if b:current_sort == 'mru'
       let list = rebuff#sortByMRU(list)
     else
-      let list = g:_.sortBy(list, b:current_sort)
+      let list = vigor#list#sortBy(list, b:current_sort)
     endif
   endif
-  let lines = g:_.map(list, function('s:ConstructEntry'))
+  let lines = vigor#list#map(list, function('s:ConstructEntry'))
 
   if b:toggles.reverse
     call reverse(lines)
@@ -687,9 +687,9 @@ function! s:ConstructEntry(i, entry) abort
   let entry = a:entry
   let line = '  '
   let line .= entry.modified ? '+ ' : '  '
-  let line .= g:_.padStart(entry.num, 4)
+  let line .= vigor#string#padStart(entry.num, 4)
   let line .= ' '
-  let line .= g:_.padStart(entry.flags, 5)
+  let line .= vigor#string#padStart(entry.flags, 5)
   let line .= ' '
   let line .= entry.name
   return line
@@ -786,7 +786,7 @@ function! rebuff#buildHelp() abort
   let lines = [ '', '', header ]
 
   for entry in s:help_legend
-    let help_key = ' ' . g:_.padEnd(entry[0], 15)
+    let help_key = ' ' . vigor#string#padEnd(entry[0], 15)
     let desc = entry[1]
 
     let remainder = size - len(help_key)
@@ -823,7 +823,7 @@ function! rebuff#buildInfoLine() abort
     \]
   let prefix = b:toggles.preview_mode ? 'Preview' : ''
   let padding = b:toggles.preview_mode ? size - 7 : size
-  return prefix . g:_.padStart(join(line, ' '), padding)
+  return prefix . vigor#string#padStart(join(line, ' '), padding)
 endfunction
 
 function! rebuff#sortByMRU(list) abort
@@ -832,14 +832,14 @@ function! rebuff#sortByMRU(list) abort
 
   function! s:MRUIteree(memo, item, ...) closure abort
     let memo = a:memo
-    let match = g:_.find(list, { 'num': a:item.num })
+    let match = vigor#list#find(list, { 'num': a:item.num })
     if type(match) == 4
       call add(memo, match)
     endif
     return memo
   endfunction
 
-  let newlist = g:_.reduce(mru, function('s:MRUIteree'), [])
+  let newlist = vigor#list#reduce(mru, function('s:MRUIteree'), [])
   for item in list
     if index(newlist, item) == -1
       call add(newlist, item)
