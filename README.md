@@ -20,7 +20,7 @@ This plugin has three dependencies. I regret that slightly, since vim has no sim
 
 #### Manually
 
-If you're the type of person that doesn't use a plugin manager, prefering instead to do it manually, you probably already know the process here. This isn't on vim.org (atm), but you can get the source from here on github (either by cloning it or just copying the files in `plugin/`, `autoload/`, and `doc/` to the right places and then sourcing them in your .vimrc.
+If you're the type of person that doesn't use a plugin manager, prefering instead to do it manually, you probably already know the process here. This isn't on vim.org (atm), but you can get the source from here on github (either by cloning it or just copying the files in `plugin/`, `autoload/`, and `doc/` to the right places and then sourcing them in your .vimrc. Make sure to run `:helptags`.
 
 #### Plug (https://github.com/junegunn/vim-plug)
 1. In your .vimrc or something sourced therein:
