@@ -832,7 +832,7 @@ function! rebuff#sortByMRU(list) abort
 
   function! s:MRUIteree(memo, item, ...) closure abort
     let memo = a:memo
-    let match = vigor#list#find(list, { 'num': a:item.num })
+    let match = vigor#list#find(list, { 'num': a:item })
     if type(match) == 4
       call add(memo, match)
     endif
