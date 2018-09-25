@@ -49,7 +49,7 @@ INSTALLATION                       *rebuff-installation*
      Clone this repository and copy the files in plugin/, autoload/, and doc/
      to their respective directories in your vimfiles, or copy the text from
      the github repository into new files in those directories. Make sure to
-     run `:helptag`.
+     run `:helptags`.
 
   2. Plug <https://github.com/junegunn/vim-plug>
 
