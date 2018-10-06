@@ -33,19 +33,13 @@ function! Rebuff()
   " check until Rebuff is used, which maybe is a little more
   " annoying for users but makes the loading order for these
   " plugins not matter.
-  if !exists("g:loaded_vigor")
-    echo 'Rebuff requires vim-vigor. See https://github.com/tandrewnichols/vim-vigor.'
-  endif
+  let missing = vigor#plugin#requires('Rebuff', [
+    \ 'https://github.com/tandrewnichols/vim-vigor',
+    \ 'https://github.com/tandrewnichols/vim-rumrunner',
+    \ 'https://github.com/dbakker/vim-projectroot'
+    \ ])
 
-  if !exists("g:loaded_rum")
-    echo 'Rebuff requires vim-rumrunner. See https://github.com/tandrewnichols/vim-rumrunner.'
-  endif
-
-  if !exists("g:loaded_projectroot")
-    echo 'Rebuff requires vim-projectroot. See https://github.com/dbakker/vim-projectroot.'
-  endif
-
-  if !exists("g:loaded_vigor") || !exists("g:loaded_rum") || !exists("g:loaded_projectroot")
+  if missing
     return
   endif
 
