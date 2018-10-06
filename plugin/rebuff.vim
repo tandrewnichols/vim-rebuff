@@ -2,9 +2,29 @@ if exists("g:loaded_rebuff") || &cp | finish | endif
 
 let g:loaded_rebuff = 1
 
-if exists('*rum#ignore')
-  call rum#ignore('\[Rebuff\]')
-endif
+let g:rebuff_VERSION = '0.0.1'
+
+call vigor#option#set('rebuff', {
+  \  'show_unlisted': 0,
+  \  'show_directories': 0,
+  \  'show_hidden': 1,
+  \  'show_help': 0,
+  \  'show_top_content': 1,
+  \  'default_sort_order': 'mru',
+  \  'vertical_split': 1,
+  \  'window_size': 80,
+  \  'relative_to_project': 1,
+  \  'show_help_entries': 0,
+  \  'open_with_count': 1,
+  \  'copy_absolute_path': 1,
+  \  'incremental_filter': 1,
+  \  'preserve_toggles': 0,
+  \  'window_position': 'rightbelow',
+  \  'preview': 1,
+  \  'reset_timeout': 1,
+  \  'debounce_preview': 150,
+  \  'open_filter_single_file': 1
+  \})
 
 function! Rebuff()
   " Dependencies :(

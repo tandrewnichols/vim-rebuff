@@ -1,34 +1,3 @@
-function! s:Set(option, default) abort
-  exec "let g:rebuff_" . a:option "= get(g:, 'rebuff_" . a:option . "', a:default)"
-endfunction
-
-for [option, default] in items({
-  \  'show_unlisted': 0,
-  \  'show_directories': 0,
-  \  'show_hidden': 1,
-  \  'show_help': 0,
-  \  'show_top_content': 1,
-  \  'default_sort_order': 'mru',
-  \  'vertical_split': 1,
-  \  'window_size': 80,
-  \  'relative_to_project': 1,
-  \  'show_help_entries': 0,
-  \  'open_with_count': 1,
-  \  'copy_absolute_path': 1,
-  \  'incremental_filter': 1,
-  \  'preserve_toggles': 0,
-  \  'window_position': 'rightbelow',
-  \  'preview': 1,
-  \  'reset_timeout': 1,
-  \  'debounce_preview': 150,
-  \  'open_filter_single_file': 1
-  \})
-  call s:Set(option, default)
-endfor
-
-let g:rebuff_VERSION = '0.0.1'
-
-
 hi RebuffAccent cterm=bold ctermbg=none ctermfg=red
 hi RebuffPreview cterm=bold ctermbg=none ctermfg=215
 sign define rebuff_pin text=📌
