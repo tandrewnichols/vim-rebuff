@@ -227,7 +227,7 @@ function! rebuff#checkFlags(entry) abort
   endfor
 
   let found = vigor#list#find(s:pinned, { 'num': entry.num })
-  let entry.pinned = type(found) != 0
+  let entry.pinned = found != v:null
 
   let included = index(s:included, entry.num)
   let entry.include = included > -1
@@ -802,7 +802,7 @@ function! rebuff#sortByMRU(list) abort
   function! s:MRUIteree(memo, item, ...) closure abort
     let memo = a:memo
     let match = vigor#list#find(list, { 'num': a:item })
-    if type(match) == 4
+    if vigor#type#isDict(match)
       call add(memo, match)
     endif
     return memo
