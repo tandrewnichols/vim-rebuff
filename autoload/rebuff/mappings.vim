@@ -19,7 +19,24 @@ function! rebuff#mappings#wrapSelect(fn, count, ...) abort
 endfunction
 
 function! rebuff#mappings#open(count) abort
+  " If there's an existing preview timeout,
+  " stop it and preview now, otherwise, we
+  " won't switch to the right buffer when
+  " something like j and CR and pressed in
+  " quick succession
+  if b:preview_timeout
+    call timer_stop(b:preview_timeout)
+    call rebuff#mappings#callPreview()
+  endif
+
+  " Close the Rebuff buffer intelligently
+  " based on the number of open windows.
   call rebuff#wrapQ()
+
+  " If there's a count, open that buffer,
+  " otherwise the selected buffer should
+  " already be the active buffer because
+  " of how previewing works
   if !empty(a:count)
     exec "b" a:count
   endif
