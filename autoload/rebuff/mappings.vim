@@ -24,7 +24,7 @@ function! rebuff#mappings#open(count) abort
   " won't switch to the right buffer when
   " something like j and CR and pressed in
   " quick succession
-  if b:preview_timeout
+  if exists("b:preview_timeout")
     call timer_stop(b:preview_timeout)
     call rebuff#mappings#callPreview()
   endif
