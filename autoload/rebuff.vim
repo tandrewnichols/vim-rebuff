@@ -595,7 +595,12 @@ function! rebuff#renderLines(pins) abort
   endif
 
   " Render the current list
-  exec "sign unplace * buffer=" . bufnr('\[Rebuff\]')
+  let buf = bufnr('\[Rebuff\]')
+
+  if (buf > -1)
+    exec "sign unplace * buffer=" . buf
+  endif
+
   if !empty(a:pins)
     let lines = a:pins + lines
   endif
